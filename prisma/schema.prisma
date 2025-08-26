@@ -1,0 +1,201 @@
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model AreaSerbaguna {
+  id        BigInt   @id @default(autoincrement())
+  namaArea  String   @db.VarChar(255)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  serbaguna Serbaguna[]
+}
+
+model Serbaguna {
+  id                BigInt   @id @default(autoincrement())
+  idPenanggungJawab BigInt
+  idArea            BigInt
+  waktuMulai        DateTime
+  waktuBerakhir     DateTime
+  jumlahPengguna    BigInt
+  keterangan        String?
+  isDone            Boolean
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  area            AreaSerbaguna @relation(fields: [idArea], references: [id])
+  penanggungJawab Users         @relation("SerbagunaPenanggung", fields: [idPenanggungJawab], references: [id])
+
+  @@index([waktuMulai])
+  @@index([waktuBerakhir])
+  @@index([waktuMulai, waktuBerakhir])
+}
+
+model Communal {
+  id                BigInt   @id @default(autoincrement())
+  idPenanggungJawab BigInt
+  waktuMulai        DateTime
+  waktuBerakhir     DateTime
+  jumlahPengguna    BigInt
+  lantai            BigInt
+  keterangan        String?
+  isDone            Boolean
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  penanggungJawab Users @relation("CommunalPenanggung", fields: [idPenanggungJawab], references: [id])
+
+  @@index([waktuMulai])
+  @@index([waktuBerakhir])
+  @@index([waktuMulai, waktuBerakhir])
+}
+
+model CWS {
+  id                BigInt   @id @default(autoincrement())
+  idPenanggungJawab BigInt
+  waktuMulai        DateTime
+  waktuBerakhir     DateTime
+  jumlahPengguna    BigInt
+  keterangan        String?
+  isDone            Boolean
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  penanggungJawab Users @relation("CWSPenanggung", fields: [idPenanggungJawab], references: [id])
+
+  @@index([waktuMulai])
+  @@index([waktuBerakhir])
+  @@index([waktuMulai, waktuBerakhir])
+}
+
+model Theater {
+  id                BigInt   @id @default(autoincrement())
+  idPenanggungJawab BigInt
+  waktuMulai        DateTime
+  waktuBerakhir     DateTime
+  jumlahPengguna    BigInt
+  keterangan        String?
+  isDone            Boolean
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  penanggungJawab Users @relation("TheaterPenanggung", fields: [idPenanggungJawab], references: [id])
+
+  @@index([waktuMulai])
+  @@index([waktuBerakhir])
+  @@index([waktuMulai, waktuBerakhir])
+}
+
+model FasilitasDapur {
+  id        BigInt   @id @default(autoincrement())
+  fasilitas String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  dapur Dapur[]
+}
+
+model Dapur {
+  id              BigInt   @id @default(autoincrement())
+  idPeminjam      BigInt
+  idFasilitas     BigInt
+  waktuMulai      DateTime
+  waktuBerakhir   DateTime
+  pinjamPeralatan Boolean
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  fasilitas FasilitasDapur @relation(fields: [idFasilitas], references: [id])
+  peminjam  Users          @relation("DapurPeminjam", fields: [idPeminjam], references: [id])
+
+  @@index([waktuMulai])
+  @@index([waktuBerakhir])
+  @@index([waktuMulai, waktuBerakhir])
+}
+
+model FasilitasMcCewe {
+  id        BigInt   @id @default(autoincrement())
+  nama      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  mesinCuciCewe MesinCuciCewe[]
+}
+
+model MesinCuciCewe {
+  id            BigInt   @id @default(autoincrement())
+  idFasilitas   BigInt
+  idPeminjam    BigInt
+  waktuMulai    DateTime
+  waktuBerakhir DateTime
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  fasilitas FasilitasMcCewe @relation(fields: [idFasilitas], references: [id])
+  peminjam  Users           @relation("MesinCuciCewePeminjam", fields: [idPeminjam], references: [id])
+
+  @@index([waktuMulai])
+  @@index([waktuBerakhir])
+  @@index([waktuMulai, waktuBerakhir])
+}
+
+model FasilitasMcCowo {
+  id        BigInt   @id @default(autoincrement())
+  nama      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  mesinCuciCowo MesinCuciCowo[]
+}
+
+model MesinCuciCowo {
+  id            BigInt   @id @default(autoincrement())
+  idFasilitas   BigInt
+  idPeminjam    BigInt
+  waktuMulai    DateTime
+  waktuBerakhir DateTime
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  fasilitas FasilitasMcCowo @relation(fields: [idFasilitas], references: [id])
+  peminjam  Users           @relation("MesinCuciCowoPeminjam", fields: [idPeminjam], references: [id])
+
+  @@index([waktuMulai])
+  @@index([waktuBerakhir])
+  @@index([waktuMulai, waktuBerakhir])
+}
+
+model Angkatan {
+  id           BigInt   @id @default(autoincrement())
+  namaAngkatan String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  users Users[]
+}
+
+model Users {
+  id            BigInt   @id @default(autoincrement())
+  idAngkatan    BigInt
+  namaLengkap   String
+  namaPanggilan String
+  nomorWa       String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  angkatan Angkatan @relation(fields: [idAngkatan], references: [id])
+
+  // Relasi ke berbagai tabel peminjam/penanggung jawab
+  serbagunaPenanggung   Serbaguna[]     @relation("SerbagunaPenanggung")
+  communalPenanggung    Communal[]      @relation("CommunalPenanggung")
+  cwsPenanggung         CWS[]           @relation("CWSPenanggung")
+  theaterPenanggung     Theater[]       @relation("TheaterPenanggung")
+  dapurPeminjam         Dapur[]         @relation("DapurPeminjam")
+  mesinCuciCewePeminjam MesinCuciCewe[] @relation("MesinCuciCewePeminjam")
+  mesinCuciCowoPeminjam MesinCuciCowo[] @relation("MesinCuciCowoPeminjam")
+}

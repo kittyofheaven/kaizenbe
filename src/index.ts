@@ -2,6 +2,12 @@ import express from "express";
 import type { Request, Response, NextFunction } from "express";
 import dotenv from "dotenv";
 
+// Import routes and middleware
+import routes from "./routes";
+import { ErrorMiddleware } from "./middleware/error.middleware";
+import DatabaseConnection from "./utils/database";
+import { setupSwagger } from "./utils/swagger";
+
 // Load environment variables
 dotenv.config();
 
@@ -12,45 +18,48 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Basic route
-app.get("/", (req: Request, res: Response) => {
-  res.json({
-    message: "Kaizen API is running!",
-    timestamp: new Date().toISOString(),
-    version: "1.0.0",
-  });
+// Request logging middleware
+app.use((req: Request, res: Response, next: NextFunction) => {
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
+  next();
 });
 
-// Health check endpoint
-app.get("/health", (req: Request, res: Response) => {
-  res.json({
-    status: "OK",
-    uptime: process.uptime(),
-    timestamp: new Date().toISOString(),
-  });
-});
+// Setup Swagger documentation
+setupSwagger(app);
 
-// Error handling middleware
-app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-  console.error("Error:", err.message);
-  res.status(500).json({
-    error: "Internal Server Error",
-    message: err.message,
-  });
-});
+// Routes
+app.use(routes);
 
 // 404 handler - catch all unmatched routes
 app.use((req: Request, res: Response) => {
   res.status(404).json({
+    success: false,
     error: "Not Found",
     message: `Route ${req.originalUrl} not found`,
   });
 });
 
+// Global error handling middleware
+app.use(ErrorMiddleware.handle);
+
+// Graceful shutdown
+process.on("SIGTERM", async () => {
+  console.log("SIGTERM received, shutting down gracefully");
+  await DatabaseConnection.disconnect();
+  process.exit(0);
+});
+
+process.on("SIGINT", async () => {
+  console.log("SIGINT received, shutting down gracefully");
+  await DatabaseConnection.disconnect();
+  process.exit(0);
+});
+
 // Start server
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`🚀 Server is running on port ${PORT}`);
   console.log(`📍 http://localhost:${PORT}`);
+  console.log(`🔗 API Documentation: http://localhost:${PORT}/api/v1`);
 });
 
 export default app;
