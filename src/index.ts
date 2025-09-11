@@ -7,9 +7,13 @@ import routes from "./routes";
 import { ErrorMiddleware } from "./middleware/error.middleware";
 import DatabaseConnection from "./utils/database";
 import { setupSwagger } from "./utils/swagger";
+import { BigIntSerializer } from "./utils/bigint-serializer";
 
 // Load environment variables
 dotenv.config();
+
+// Configure BigInt serialization
+BigIntSerializer.configureGlobalSerialization();
 
 const app = express();
 const PORT = process.env.PORT || 3000;

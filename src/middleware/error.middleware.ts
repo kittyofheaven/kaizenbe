@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { ResponseUtil } from "../utils/response";
+import { BigIntSerializer } from "../utils/bigint-serializer";
 
 export class ErrorMiddleware {
   static handle = (
@@ -8,7 +9,13 @@ export class ErrorMiddleware {
     res: Response,
     next: NextFunction
   ): void => {
-    console.error("Error:", err);
+    // Serialize BigInt for safe logging and response
+    const serializedError = BigIntSerializer.serialize({
+      message: err.message,
+      name: err.name,
+      stack: err.stack,
+    });
+    console.error("Error:", serializedError);
 
     // Handle different types of errors
     if (err.message === "Resource not found") {

@@ -181,14 +181,14 @@ model Angkatan {
 
 model Users {
   id            BigInt   @id @default(autoincrement())
-  idAngkatan    BigInt
+  idAngkatan    BigInt?
   namaLengkap   String
   namaPanggilan String
   nomorWa       String?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
-  angkatan Angkatan @relation(fields: [idAngkatan], references: [id])
+  angkatan Angkatan? @relation(fields: [idAngkatan], references: [id])
 
   // Relasi ke berbagai tabel peminjam/penanggung jawab
   serbagunaPenanggung   Serbaguna[]     @relation("SerbagunaPenanggung")
