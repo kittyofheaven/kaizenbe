@@ -282,8 +282,53 @@ export const setupSwagger = (app: Application): void => {
     "/api/docs",
     swaggerUi.serve,
     swaggerUi.setup(specs, {
-      customCss: ".swagger-ui .topbar { display: none }",
+      customCss: `
+        .swagger-ui .topbar { display: none }
+        .swagger-ui .btn.authorize { 
+          background-color: #4CAF50 !important;
+          border-color: #4CAF50 !important;
+        }
+        .swagger-ui .btn.authorize:hover {
+          background-color: #45a049 !important;
+          border-color: #45a049 !important;
+        }
+      `,
       customSiteTitle: "Kaizen API Documentation",
+      swaggerOptions: {
+        persistAuthorization: true, // Keep token after page refresh
+        tryItOutEnabled: true,
+        filter: true,
+        displayRequestDuration: true,
+        docExpansion: "none", // Don't expand endpoints by default
+        defaultModelsExpandDepth: 2,
+        defaultModelExpandDepth: 2,
+        // Custom authorization configuration
+        authAction: {
+          bearerAuth: {
+            name: "bearerAuth",
+            schema: {
+              type: "http",
+              scheme: "bearer",
+              bearerFormat: "JWT"
+            },
+            value: "Bearer <your_jwt_token_here>"
+          }
+        }
+      },
+      customJs: [
+        // Add custom JavaScript to enhance UI
+        `
+        window.onload = function() {
+          // Add helpful text to authorize button
+          setTimeout(function() {
+            const authorizeBtn = document.querySelector('.btn.authorize');
+            if (authorizeBtn) {
+              authorizeBtn.setAttribute('title', 'Click to add your JWT token for authentication');
+            }
+          }, 1000);
+        }
+        `
+      ]
     })
   );
 };

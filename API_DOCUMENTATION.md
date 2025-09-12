@@ -47,8 +47,8 @@ const loginResponse = await fetch("http://localhost:3000/api/v1/auth/login", {
     "Content-Type": "application/json",
   },
   body: JSON.stringify({
-    nomorWa: "+6285790826168",  // Test user: Hazel
-    password: "12345678"         // Test password
+    nomorWa: "+6285790826168", // Test user: Hazel
+    password: "12345678", // Test password
   }),
 });
 
@@ -58,7 +58,7 @@ if (loginData.success) {
   // 2. Simpan token untuk request selanjutnya
   const token = loginData.data.token;
   localStorage.setItem("authToken", token);
-  
+
   console.log("✅ Login berhasil!");
   console.log("User:", loginData.data.user);
   console.log("Token expires in:", loginData.data.expiresIn); // "1h"
@@ -77,9 +77,9 @@ const token = localStorage.getItem("authToken");
 const response = await fetch("http://localhost:3000/api/v1/users", {
   method: "GET",
   headers: {
-    "Authorization": `Bearer ${token}`,
-    "Content-Type": "application/json"
-  }
+    Authorization: `Bearer ${token}`,
+    "Content-Type": "application/json",
+  },
 });
 
 // 5. Handle response
@@ -100,7 +100,7 @@ console.log("📊 Data users:", data);
 // Helper function untuk handle API calls dengan auto-refresh
 async function apiCall(url, options = {}) {
   const token = localStorage.getItem("authToken");
-  
+
   if (!token) {
     throw new Error("No token found. Please login first.");
   }
@@ -109,9 +109,9 @@ async function apiCall(url, options = {}) {
     ...options,
     headers: {
       ...options.headers,
-      "Authorization": `Bearer ${token}`,
-      "Content-Type": "application/json"
-    }
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
   });
 
   // Handle token expiration
@@ -137,10 +137,10 @@ try {
 
 **Available Test Users:**
 
-| Nama | Nomor WA | Password |
-|------|----------|----------|
+| Nama      | Nomor WA         | Password      |
+| --------- | ---------------- | ------------- |
 | Test User | `+6281234567890` | `password123` |
-| Hazel | `+6285790826168` | `12345678` |
+| Hazel     | `+6285790826168` | `12345678`    |
 
 ### ⚡ Quick Test
 
@@ -344,6 +344,7 @@ http://localhost:3000/api/docs
 **❌ Problem:** Tidak mengirim Authorization header pada protected endpoints.
 
 **✅ Solution:**
+
 ```javascript
 // WRONG ❌
 const response = await fetch("/api/v1/users");
@@ -352,8 +353,8 @@ const response = await fetch("/api/v1/users");
 const token = localStorage.getItem("authToken");
 const response = await fetch("/api/v1/users", {
   headers: {
-    "Authorization": `Bearer ${token}`
-  }
+    Authorization: `Bearer ${token}`,
+  },
 });
 ```
 
@@ -369,13 +370,14 @@ const response = await fetch("/api/v1/users", {
 **❌ Problem:** Token sudah expired (lebih dari 1 jam) atau format salah.
 
 **✅ Solution:**
+
 ```javascript
 // Check token expiration before making requests
 function isTokenExpired(token) {
   if (!token) return true;
-  
+
   try {
-    const payload = JSON.parse(atob(token.split('.')[1]));
+    const payload = JSON.parse(atob(token.split(".")[1]));
     return payload.exp * 1000 < Date.now();
   } catch {
     return true;
@@ -390,7 +392,7 @@ if (isTokenExpired(token)) {
 } else {
   // Use token for API call
   const response = await fetch("/api/v1/users", {
-    headers: { "Authorization": `Bearer ${token}` }
+    headers: { Authorization: `Bearer ${token}` },
   });
 }
 ```
@@ -407,17 +409,18 @@ if (isTokenExpired(token)) {
 **❌ Problem:** Credentials salah atau user tidak exist.
 
 **✅ Solution:**
+
 ```javascript
 // Make sure to use correct format and test credentials
 const loginData = {
   nomorWa: "+6285790826168", // Must include country code (+62)
-  password: "12345678"       // Exact password (case sensitive)
+  password: "12345678", // Exact password (case sensitive)
 };
 
 const response = await fetch("/api/v1/auth/login", {
   method: "POST",
   headers: { "Content-Type": "application/json" },
-  body: JSON.stringify(loginData)
+  body: JSON.stringify(loginData),
 });
 ```
 
@@ -435,9 +438,10 @@ const response = await fetch("/api/v1/auth/login", {
 **❌ Problem:** Waktu tidak dalam slot 1 jam atau menit/detik tidak 0.
 
 **✅ Solution:**
+
 ```javascript
 // WRONG ❌
-const waktuMulai = "2024-01-15T13:30:00.000Z";  // 13:30 not allowed
+const waktuMulai = "2024-01-15T13:30:00.000Z"; // 13:30 not allowed
 const waktuBerakhir = "2024-01-15T14:30:00.000Z";
 
 // CORRECT ✅
@@ -447,7 +451,7 @@ function createBookingTime(date, hour) {
   return bookingDate.toISOString();
 }
 
-const waktuMulai = createBookingTime("2024-01-15", 13);    // 13:00:00.000Z
+const waktuMulai = createBookingTime("2024-01-15", 13); // 13:00:00.000Z
 const waktuBerakhir = createBookingTime("2024-01-15", 14); // 14:00:00.000Z
 ```
 
@@ -463,15 +467,16 @@ const waktuBerakhir = createBookingTime("2024-01-15", 14); // 14:00:00.000Z
 **❌ Problem:** Mencoba booking untuk waktu yang sudah lewat.
 
 **✅ Solution:**
+
 ```javascript
 function validateBookingTime(waktuMulai) {
   const bookingTime = new Date(waktuMulai);
   const now = new Date();
-  
+
   if (bookingTime <= now) {
     throw new Error("Cannot book for past time");
   }
-  
+
   return true;
 }
 
@@ -487,6 +492,7 @@ validateBookingTime(waktuMulai);
 **❌ Problem:** Frontend tidak bisa akses API karena CORS policy.
 
 **✅ Solution:**
+
 ```javascript
 // Make sure server is running on correct port
 const BASE_URL = "http://localhost:3000";
@@ -507,6 +513,7 @@ const response = await fetch("/api/v1/users");
 **❌ Problem:** Server tidak running atau URL salah.
 
 **✅ Solution:**
+
 ```bash
 # Check if server is running
 curl http://localhost:3000/health
@@ -530,21 +537,22 @@ npm run dev
 **❌ Problem:** Data tidak sesuai format yang diharapkan.
 
 **✅ Solution:**
+
 ```javascript
 // Validate data before sending
 function validateUserData(userData) {
   const errors = [];
-  
+
   if (!userData.namaLengkap) errors.push("namaLengkap is required");
   if (!userData.nomorWa) errors.push("nomorWa is required");
   if (userData.nomorWa && !userData.nomorWa.startsWith("+62")) {
     errors.push("nomorWa must start with +62");
   }
-  
+
   if (errors.length > 0) {
     throw new Error(`Validation failed: ${errors.join(", ")}`);
   }
-  
+
   return true;
 }
 
@@ -552,7 +560,7 @@ function validateUserData(userData) {
 const userData = {
   namaLengkap: "John Doe",
   namaPanggilan: "John",
-  nomorWa: "+6281234567890"
+  nomorWa: "+6281234567890",
 };
 
 validateUserData(userData);
@@ -565,6 +573,7 @@ validateUserData(userData);
 **❌ Problem:** Mengakses property yang tidak ada di response.
 
 **✅ Solution:**
+
 ```javascript
 // WRONG ❌
 const response = await fetch("/api/v1/users");
@@ -1730,11 +1739,11 @@ class KaizenAPI {
     const response = await fetch(`${this.baseURL}/api/v1/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ nomorWa, password })
+      body: JSON.stringify({ nomorWa, password }),
     });
 
     const result = await response.json();
-    
+
     if (result.success) {
       this.token = result.data.token;
       localStorage.setItem("authToken", this.token);
@@ -1760,9 +1769,9 @@ class KaizenAPI {
       ...options,
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${this.token}`,
-        ...options.headers
-      }
+        Authorization: `Bearer ${this.token}`,
+        ...options.headers,
+      },
     };
 
     const response = await fetch(url, config);
@@ -1793,7 +1802,7 @@ class KaizenAPI {
   async createCommunalBooking(bookingData) {
     return this.apiCall("/api/v1/communal", {
       method: "POST",
-      body: JSON.stringify(bookingData)
+      body: JSON.stringify(bookingData),
     });
   }
 
@@ -1825,9 +1834,9 @@ class KaizenAPI {
 
   isTokenExpired() {
     if (!this.token) return true;
-    
+
     try {
-      const payload = JSON.parse(atob(this.token.split('.')[1]));
+      const payload = JSON.parse(atob(this.token.split(".")[1]));
       return payload.exp * 1000 < Date.now();
     } catch {
       return true;
@@ -1863,7 +1872,7 @@ try {
     jumlahPengguna: "5",
     lantai: "2",
     keterangan: "Meeting tim",
-    isDone: false
+    isDone: false,
   });
   console.log("Booking created:", booking.data);
 } catch (error) {
@@ -1875,7 +1884,7 @@ try {
 
 ```javascript
 // useKaizenAPI.js
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from "react";
 
 export function useKaizenAPI() {
   const [api] = useState(() => new KaizenAPI());
@@ -1899,44 +1908,50 @@ export function useKaizenAPI() {
     checkAuth();
   }, [api]);
 
-  const login = useCallback(async (nomorWa, password) => {
-    setLoading(true);
-    setError(null);
+  const login = useCallback(
+    async (nomorWa, password) => {
+      setLoading(true);
+      setError(null);
 
-    try {
-      const userData = await api.login(nomorWa, password);
-      setUser(userData.user);
-      return userData;
-    } catch (err) {
-      setError(err.message);
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  }, [api]);
+      try {
+        const userData = await api.login(nomorWa, password);
+        setUser(userData.user);
+        return userData;
+      } catch (err) {
+        setError(err.message);
+        throw err;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [api]
+  );
 
   const logout = useCallback(async () => {
     await api.logout();
     setUser(null);
   }, [api]);
 
-  const apiCall = useCallback(async (endpoint, options) => {
-    setLoading(true);
-    setError(null);
+  const apiCall = useCallback(
+    async (endpoint, options) => {
+      setLoading(true);
+      setError(null);
 
-    try {
-      const result = await api.apiCall(endpoint, options);
-      return result;
-    } catch (err) {
-      setError(err.message);
-      if (err.message.includes("Token expired")) {
-        setUser(null);
+      try {
+        const result = await api.apiCall(endpoint, options);
+        return result;
+      } catch (err) {
+        setError(err.message);
+        if (err.message.includes("Token expired")) {
+          setUser(null);
+        }
+        throw err;
+      } finally {
+        setLoading(false);
       }
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  }, [api]);
+    },
+    [api]
+  );
 
   return {
     api,
@@ -1946,13 +1961,14 @@ export function useKaizenAPI() {
     login,
     logout,
     apiCall,
-    isAuthenticated: !!user
+    isAuthenticated: !!user,
   };
 }
 
 // Usage in React component
 function App() {
-  const { user, login, logout, apiCall, loading, error, isAuthenticated } = useKaizenAPI();
+  const { user, login, logout, apiCall, loading, error, isAuthenticated } =
+    useKaizenAPI();
   const [users, setUsers] = useState([]);
 
   const handleLogin = async (e) => {
@@ -1981,7 +1997,7 @@ function App() {
         <button type="submit" disabled={loading}>
           {loading ? "Logging in..." : "Login"}
         </button>
-        {error && <p style={{color: 'red'}}>{error}</p>}
+        {error && <p style={{ color: "red" }}>{error}</p>}
       </form>
     );
   }
@@ -1991,11 +2007,13 @@ function App() {
       <h1>Welcome, {user.namaLengkap}</h1>
       <button onClick={logout}>Logout</button>
       <button onClick={loadUsers}>Load Users</button>
-      
+
       {users.length > 0 && (
         <ul>
-          {users.map(u => (
-            <li key={u.id}>{u.namaLengkap} - {u.nomorWa}</li>
+          {users.map((u) => (
+            <li key={u.id}>
+              {u.namaLengkap} - {u.nomorWa}
+            </li>
           ))}
         </ul>
       )}
@@ -2010,18 +2028,18 @@ function App() {
 // validation.js
 export const validators = {
   required: (value, fieldName) => {
-    if (!value || value.toString().trim() === '') {
+    if (!value || value.toString().trim() === "") {
       return `${fieldName} is required`;
     }
     return null;
   },
 
   phoneNumber: (value) => {
-    if (!value.startsWith('+62')) {
-      return 'Phone number must start with +62';
+    if (!value.startsWith("+62")) {
+      return "Phone number must start with +62";
     }
     if (!/^\+62\d{9,13}$/.test(value)) {
-      return 'Invalid phone number format';
+      return "Invalid phone number format";
     }
     return null;
   },
@@ -2032,24 +2050,24 @@ export const validators = {
     const now = new Date();
 
     if (start <= now) {
-      return 'Booking time cannot be in the past';
+      return "Booking time cannot be in the past";
     }
 
     if (start.getMinutes() !== 0 || start.getSeconds() !== 0) {
-      return 'Start time must be at exact hour (e.g., 13:00:00)';
+      return "Start time must be at exact hour (e.g., 13:00:00)";
     }
 
     if (end.getMinutes() !== 0 || end.getSeconds() !== 0) {
-      return 'End time must be at exact hour (e.g., 14:00:00)';
+      return "End time must be at exact hour (e.g., 14:00:00)";
     }
 
     const diffHours = (end - start) / (1000 * 60 * 60);
     if (diffHours !== 1) {
-      return 'Booking must be exactly 1 hour';
+      return "Booking must be exactly 1 hour";
     }
 
     return null;
-  }
+  },
 };
 
 export function validateForm(data, rules) {
@@ -2067,7 +2085,7 @@ export function validateForm(data, rules) {
 
   return {
     isValid: Object.keys(errors).length === 0,
-    errors
+    errors,
   };
 }
 
@@ -2077,7 +2095,7 @@ const bookingData = {
   waktuMulai: "2024-01-15T13:00:00.000Z",
   waktuBerakhir: "2024-01-15T14:00:00.000Z",
   jumlahPengguna: "5",
-  keterangan: "Test booking"
+  keterangan: "Test booking",
 };
 
 const validation = validateForm(bookingData, {
@@ -2085,7 +2103,7 @@ const validation = validateForm(bookingData, {
   waktuMulai: [validators.required],
   waktuBerakhir: [validators.required],
   jumlahPengguna: [validators.required],
-  keterangan: [validators.required]
+  keterangan: [validators.required],
 });
 
 if (!validation.isValid) {
@@ -2120,7 +2138,7 @@ async function debugApiCall(url, options = {}) {
       url,
       method: options.method || "GET",
       headers: options.headers,
-      body: options.body
+      body: options.body,
     });
   }
 
@@ -2131,7 +2149,7 @@ async function debugApiCall(url, options = {}) {
     console.log("📨 API Response:", {
       status: response.status,
       statusText: response.statusText,
-      data: result
+      data: result,
     });
   }
 
@@ -2183,15 +2201,19 @@ fetch("http://localhost:3000/api/v1/auth/login", {
   headers: { "Content-Type": "application/json" },
   body: JSON.stringify({
     nomorWa: "+6285790826168",
-    password: "12345678"
-  })
-}).then(r => r.json()).then(console.log);
+    password: "12345678",
+  }),
+})
+  .then((r) => r.json())
+  .then(console.log);
 
 // 2. Test protected endpoint
 const token = "your_token_here";
 fetch("http://localhost:3000/api/v1/users", {
-  headers: { "Authorization": `Bearer ${token}` }
-}).then(r => r.json()).then(console.log);
+  headers: { Authorization: `Bearer ${token}` },
+})
+  .then((r) => r.json())
+  .then(console.log);
 ```
 
 #### **2. Postman Collection**
@@ -2207,7 +2229,9 @@ fetch("http://localhost:3000/api/v1/users", {
     {
       "listen": "prerequest",
       "script": {
-        "exec": ["pm.request.headers.add({key: 'Content-Type', value: 'application/json'});"]
+        "exec": [
+          "pm.request.headers.add({key: 'Content-Type', value: 'application/json'});"
+        ]
       }
     }
   ]
