@@ -1,10 +1,12 @@
 import { Router } from "express";
+import authRoutes from "./auth.routes";
 import usersRoutes from "./users.routes";
 import communalRoutes from "./communal.routes";
 import serbagunaRoutes from "./serbaguna.routes";
 import mesinCuciCeweRoutes from "./mesin-cuci-cewe.routes";
 import mesinCuciCowoRoutes from "./mesin-cuci-cowo.routes";
 import dapurRoutes from "./dapur.routes";
+import { AuthMiddleware } from "../middleware/auth.middleware";
 // Import other routes here
 // import cwsRoutes from './cws.routes';
 // import theaterRoutes from './theater.routes';
@@ -14,15 +16,34 @@ const router = Router();
 // API versioning
 const API_VERSION = "/api/v1";
 
-// Register routes
-router.use(`${API_VERSION}/users`, usersRoutes);
-router.use(`${API_VERSION}/communal`, communalRoutes);
-router.use(`${API_VERSION}/serbaguna`, serbagunaRoutes);
-router.use(`${API_VERSION}/mesin-cuci-cewe`, mesinCuciCeweRoutes);
-router.use(`${API_VERSION}/mesin-cuci-cowo`, mesinCuciCowoRoutes);
-router.use(`${API_VERSION}/dapur`, dapurRoutes);
-// router.use(`${API_VERSION}/cws`, cwsRoutes);
-// router.use(`${API_VERSION}/theater`, theaterRoutes);
+// Public routes (no authentication required)
+router.use(`${API_VERSION}/auth`, authRoutes);
+
+// Protected routes (authentication required)
+router.use(`${API_VERSION}/users`, AuthMiddleware.authenticate, usersRoutes);
+router.use(
+  `${API_VERSION}/communal`,
+  AuthMiddleware.authenticate,
+  communalRoutes
+);
+router.use(
+  `${API_VERSION}/serbaguna`,
+  AuthMiddleware.authenticate,
+  serbagunaRoutes
+);
+router.use(
+  `${API_VERSION}/mesin-cuci-cewe`,
+  AuthMiddleware.authenticate,
+  mesinCuciCeweRoutes
+);
+router.use(
+  `${API_VERSION}/mesin-cuci-cowo`,
+  AuthMiddleware.authenticate,
+  mesinCuciCowoRoutes
+);
+router.use(`${API_VERSION}/dapur`, AuthMiddleware.authenticate, dapurRoutes);
+// router.use(`${API_VERSION}/cws`, AuthMiddleware.authenticate, cwsRoutes);
+// router.use(`${API_VERSION}/theater`, AuthMiddleware.authenticate, theaterRoutes);
 
 // Health check
 router.get("/health", (req, res) => {
@@ -42,6 +63,7 @@ router.get(`${API_VERSION}`, (req, res) => {
     version: "1.0.0",
     documentation: "/api/docs",
     endpoints: {
+      auth: `${API_VERSION}/auth`,
       users: `${API_VERSION}/users`,
       communal: `${API_VERSION}/communal`,
       serbaguna: `${API_VERSION}/serbaguna`,
@@ -51,6 +73,11 @@ router.get(`${API_VERSION}`, (req, res) => {
       // Add other endpoints here
       // cws: `${API_VERSION}/cws`,
       // theater: `${API_VERSION}/theater`,
+    },
+    authentication: {
+      required: "All endpoints except /auth require JWT token",
+      tokenType: "Bearer",
+      expiresIn: "1h",
     },
   });
 });

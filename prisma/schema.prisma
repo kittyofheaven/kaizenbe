@@ -185,6 +185,7 @@ model Users {
   namaLengkap   String
   namaPanggilan String
   nomorWa       String?
+  password      String
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 

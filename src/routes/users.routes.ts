@@ -17,6 +17,8 @@ const usersController = new UsersController();
  *   get:
  *     summary: Get all users
  *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - $ref: '#/components/parameters/PageParam'
  *       - $ref: '#/components/parameters/LimitParam'
@@ -44,6 +46,8 @@ router.get("/", usersController.getAll);
  *   get:
  *     summary: Get user by ID
  *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - name: id
  *         in: path
@@ -81,8 +85,11 @@ router.get("/:id", usersController.getById);
  * @swagger
  * /api/v1/users:
  *   post:
- *     summary: Create a new user
+ *     summary: Create a new user (deprecated - use /auth/register)
  *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     deprecated: true
  *     requestBody:
  *       required: true
  *       content:
@@ -120,6 +127,8 @@ router.post("/", usersController.create);
  *   put:
  *     summary: Update user by ID
  *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - name: id
  *         in: path
@@ -165,6 +174,8 @@ router.put("/:id", usersController.update);
  *   delete:
  *     summary: Delete user by ID
  *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - name: id
  *         in: path
@@ -204,6 +215,8 @@ router.delete("/:id", usersController.delete);
  *   get:
  *     summary: Get users by angkatan ID
  *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - name: angkatanId
  *         in: path
@@ -239,6 +252,8 @@ router.get("/angkatan/:angkatanId", usersController.getUsersByAngkatan);
  *   get:
  *     summary: Get user by WhatsApp number
  *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - name: nomorWa
  *         in: path

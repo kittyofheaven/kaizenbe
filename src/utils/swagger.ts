@@ -21,6 +21,14 @@ const options = {
       },
     ],
     components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: "http",
+          scheme: "bearer",
+          bearerFormat: "JWT",
+          description: "Enter JWT token (without Bearer prefix)",
+        },
+      },
       schemas: {
         User: {
           type: "object",
