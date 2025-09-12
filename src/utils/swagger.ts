@@ -225,6 +225,108 @@ const options = {
           },
         },
       },
+      responses: {
+        BadRequest: {
+          description: "Bad Request - Invalid input data",
+          content: {
+            "application/json": {
+              schema: {
+                $ref: "#/components/schemas/ErrorResponse",
+              },
+              example: {
+                success: false,
+                message: "Validation failed",
+                errors: ["Field is required"],
+              },
+            },
+          },
+        },
+        Unauthorized: {
+          description: "Unauthorized - Authentication required",
+          content: {
+            "application/json": {
+              schema: {
+                $ref: "#/components/schemas/ErrorResponse",
+              },
+              example: {
+                success: false,
+                message: "Access token is required",
+              },
+            },
+          },
+        },
+        Forbidden: {
+          description: "Forbidden - Access denied",
+          content: {
+            "application/json": {
+              schema: {
+                $ref: "#/components/schemas/ErrorResponse",
+              },
+              example: {
+                success: false,
+                message: "Access denied",
+              },
+            },
+          },
+        },
+        NotFound: {
+          description: "Not Found - Resource not found",
+          content: {
+            "application/json": {
+              schema: {
+                $ref: "#/components/schemas/ErrorResponse",
+              },
+              example: {
+                success: false,
+                message: "Resource not found",
+              },
+            },
+          },
+        },
+        Conflict: {
+          description: "Conflict - Resource already exists or conflicts with current state",
+          content: {
+            "application/json": {
+              schema: {
+                $ref: "#/components/schemas/ErrorResponse",
+              },
+              example: {
+                success: false,
+                message: "Resource already exists",
+              },
+            },
+          },
+        },
+        UnprocessableEntity: {
+          description: "Unprocessable Entity - Validation error",
+          content: {
+            "application/json": {
+              schema: {
+                $ref: "#/components/schemas/ErrorResponse",
+              },
+              example: {
+                success: false,
+                message: "Validation failed",
+                errors: ["Invalid date format", "Required field missing"],
+              },
+            },
+          },
+        },
+        InternalServerError: {
+          description: "Internal Server Error - Something went wrong on the server",
+          content: {
+            "application/json": {
+              schema: {
+                $ref: "#/components/schemas/ErrorResponse",
+              },
+              example: {
+                success: false,
+                message: "Internal server error",
+              },
+            },
+          },
+        },
+      },
       parameters: {
         PageParam: {
           name: "page",
@@ -309,11 +411,11 @@ export const setupSwagger = (app: Application): void => {
             schema: {
               type: "http",
               scheme: "bearer",
-              bearerFormat: "JWT"
+              bearerFormat: "JWT",
             },
-            value: "Bearer <your_jwt_token_here>"
-          }
-        }
+            value: "Bearer <your_jwt_token_here>",
+          },
+        },
       },
       customJs: [
         // Add custom JavaScript to enhance UI
@@ -327,8 +429,8 @@ export const setupSwagger = (app: Application): void => {
             }
           }, 1000);
         }
-        `
-      ]
+        `,
+      ],
     })
   );
 };
