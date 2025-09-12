@@ -284,7 +284,8 @@ const options = {
           },
         },
         Conflict: {
-          description: "Conflict - Resource already exists or conflicts with current state",
+          description:
+            "Conflict - Resource already exists or conflicts with current state",
           content: {
             "application/json": {
               schema: {
@@ -313,7 +314,8 @@ const options = {
           },
         },
         InternalServerError: {
-          description: "Internal Server Error - Something went wrong on the server",
+          description:
+            "Internal Server Error - Something went wrong on the server",
           content: {
             "application/json": {
               schema: {

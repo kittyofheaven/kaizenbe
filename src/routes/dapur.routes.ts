@@ -629,5 +629,3 @@ router.get("/fasilitas/:fasilitasId", dapurController.getDapurByFasilitas);
 router.get("/time-range", dapurController.getDapurByTimeRange);
 
 export default router;
-
-

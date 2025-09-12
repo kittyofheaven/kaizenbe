@@ -610,5 +610,3 @@ router.get(
 router.get("/time-range", mesinCuciCeweController.getMesinCuciByTimeRange);
 
 export default router;
-
-
