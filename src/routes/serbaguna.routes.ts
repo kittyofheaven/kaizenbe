@@ -185,6 +185,8 @@ const serbagunaController = new SerbagunaController();
  *   get:
  *     summary: Get all serbaguna bookings
  *     tags: [Serbaguna]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - $ref: '#/components/parameters/PageParam'
  *       - $ref: '#/components/parameters/LimitParam'
@@ -225,6 +227,8 @@ router.get("/", serbagunaController.getAll);
  *   get:
  *     summary: Get suggested time slots for serbaguna booking
  *     tags: [Serbaguna]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - name: date
  *         in: query
@@ -264,6 +268,8 @@ router.get("/time-slots", serbagunaController.getTimeSlotSuggestions);
  *   get:
  *     summary: Get all available serbaguna areas
  *     tags: [Serbaguna]
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: Available areas retrieved successfully
@@ -291,6 +297,8 @@ router.get("/areas", serbagunaController.getAvailableAreas);
  *   get:
  *     summary: Get serbaguna booking by ID
  *     tags: [Serbaguna]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - name: id
  *         in: path
@@ -323,6 +331,8 @@ router.get("/:id", serbagunaController.getById);
  *   post:
  *     summary: Create new serbaguna booking
  *     tags: [Serbaguna]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -392,6 +402,8 @@ router.post("/", serbagunaController.create);
  *   put:
  *     summary: Update serbaguna booking
  *     tags: [Serbaguna]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - name: id
  *         in: path
@@ -438,6 +450,8 @@ router.put("/:id", serbagunaController.update);
  *   delete:
  *     summary: Delete serbaguna booking
  *     tags: [Serbaguna]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - name: id
  *         in: path
@@ -460,6 +474,8 @@ router.delete("/:id", serbagunaController.delete);
  *   get:
  *     summary: Get serbaguna bookings by responsible person
  *     tags: [Serbaguna]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - name: penanggungJawabId
  *         in: path
@@ -495,6 +511,8 @@ router.get(
  *   get:
  *     summary: Get serbaguna bookings by area
  *     tags: [Serbaguna]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - name: areaId
  *         in: path
@@ -527,6 +545,8 @@ router.get("/area/:areaId", serbagunaController.getSerbagunaByArea);
  *   get:
  *     summary: Get available time slots for specific date and area
  *     tags: [Serbaguna]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - name: date
  *         in: path

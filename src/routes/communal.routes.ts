@@ -179,6 +179,8 @@ const communalController = new CommunalController();
  *   get:
  *     summary: Get all communal bookings
  *     tags: [Communal]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - $ref: '#/components/parameters/PageParam'
  *       - $ref: '#/components/parameters/LimitParam'
@@ -219,6 +221,8 @@ router.get("/", communalController.getAll);
  *   get:
  *     summary: Get suggested time slots for communal booking
  *     tags: [Communal]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - name: date
  *         in: query
@@ -261,6 +265,8 @@ router.get("/time-slots", communalController.getTimeSlotSuggestions);
  *   get:
  *     summary: Get communal booking by ID
  *     tags: [Communal]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - name: id
  *         in: path
@@ -293,6 +299,8 @@ router.get("/:id", communalController.getById);
  *   post:
  *     summary: Create new communal booking
  *     tags: [Communal]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -361,6 +369,8 @@ router.post("/", communalController.create);
  *   put:
  *     summary: Update communal booking
  *     tags: [Communal]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - name: id
  *         in: path
@@ -402,6 +412,8 @@ router.put("/:id", communalController.update);
  *   delete:
  *     summary: Delete communal booking
  *     tags: [Communal]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - name: id
  *         in: path
@@ -424,6 +436,8 @@ router.delete("/:id", communalController.delete);
  *   get:
  *     summary: Get communal bookings by responsible person
  *     tags: [Communal]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - name: penanggungJawabId
  *         in: path
@@ -459,6 +473,8 @@ router.get(
  *   get:
  *     summary: Get communal bookings by floor
  *     tags: [Communal]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - name: lantai
  *         in: path
@@ -491,6 +507,8 @@ router.get("/lantai/:lantai", communalController.getCommunalByLantai);
  *   get:
  *     summary: Get available time slots for specific date and floor
  *     tags: [Communal]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - name: date
  *         in: path

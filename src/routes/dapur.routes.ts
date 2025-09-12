@@ -182,6 +182,8 @@ const dapurController = new DapurController();
  *   get:
  *     tags: [Dapur]
  *     summary: Get all kitchen bookings
+ *     security:
+ *       - bearerAuth: []
  *     description: Retrieve paginated list of all kitchen bookings with borrower and facility details
  *     parameters:
  *       - $ref: '#/components/parameters/PageParam'
@@ -219,6 +221,8 @@ router.get("/", dapurController.getAll);
  *   get:
  *     tags: [Dapur]
  *     summary: Get suggested time slots for kitchen booking
+ *     security:
+ *       - bearerAuth: []
  *     description: Get available 1-hour time slots for a specific date and optionally facility
  *     parameters:
  *       - name: date
@@ -280,6 +284,8 @@ router.get("/time-slots", dapurController.getAvailableTimeSlots);
  *   get:
  *     tags: [Dapur]
  *     summary: Get all available kitchen facilities
+ *     security:
+ *       - bearerAuth: []
  *     description: Retrieve list of all available kitchen facilities and equipment
  *     responses:
  *       200:
@@ -310,6 +316,8 @@ router.get("/facilities", dapurController.getAvailableFacilities);
  *   get:
  *     tags: [Dapur]
  *     summary: Get kitchen booking by ID
+ *     security:
+ *       - bearerAuth: []
  *     description: Retrieve a specific kitchen booking by its ID
  *     parameters:
  *       - name: id
@@ -349,6 +357,8 @@ router.get("/:id", dapurController.getById);
  *   post:
  *     tags: [Dapur]
  *     summary: Create new kitchen booking
+ *     security:
+ *       - bearerAuth: []
  *     description: Create a new kitchen booking with 1-hour time slot validation and equipment borrowing option
  *     requestBody:
  *       required: true
@@ -401,6 +411,8 @@ router.post("/", dapurController.create);
  *   put:
  *     tags: [Dapur]
  *     summary: Update kitchen booking by ID
+ *     security:
+ *       - bearerAuth: []
  *     description: Update an existing kitchen booking with validation
  *     parameters:
  *       - name: id
@@ -448,6 +460,8 @@ router.put("/:id", dapurController.update);
  *   delete:
  *     tags: [Dapur]
  *     summary: Delete kitchen booking by ID
+ *     security:
+ *       - bearerAuth: []
  *     description: Delete an existing kitchen booking
  *     parameters:
  *       - name: id
@@ -487,6 +501,8 @@ router.delete("/:id", dapurController.delete);
  *   get:
  *     tags: [Dapur]
  *     summary: Get kitchen bookings by borrower ID
+ *     security:
+ *       - bearerAuth: []
  *     description: Retrieve all kitchen bookings for a specific borrower
  *     parameters:
  *       - name: peminjamId
@@ -526,6 +542,8 @@ router.get("/peminjam/:peminjamId", dapurController.getDapurByPeminjam);
  *   get:
  *     tags: [Dapur]
  *     summary: Get kitchen bookings by facility ID
+ *     security:
+ *       - bearerAuth: []
  *     description: Retrieve all kitchen bookings for a specific facility
  *     parameters:
  *       - name: fasilitasId
@@ -565,6 +583,8 @@ router.get("/fasilitas/:fasilitasId", dapurController.getDapurByFasilitas);
  *   get:
  *     tags: [Dapur]
  *     summary: Get kitchen bookings by time range
+ *     security:
+ *       - bearerAuth: []
  *     description: Retrieve all kitchen bookings within a specific time range
  *     parameters:
  *       - name: startTime

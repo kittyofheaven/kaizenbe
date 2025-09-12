@@ -157,6 +157,8 @@ const mesinCuciCeweController = new MesinCuciCeweController();
  *   get:
  *     tags: [MesinCuciCewe]
  *     summary: Get all women's washing machine bookings
+ *     security:
+ *       - bearerAuth: []
  *     description: Retrieve paginated list of all women's washing machine bookings with borrower and facility details
  *     parameters:
  *       - $ref: '#/components/parameters/PageParam'
@@ -194,6 +196,8 @@ router.get("/", mesinCuciCeweController.getAll);
  *   get:
  *     tags: [MesinCuciCewe]
  *     summary: Get suggested time slots for women's washing machine booking
+ *     security:
+ *       - bearerAuth: []
  *     description: Get available 1-hour time slots for a specific date and optionally facility
  *     parameters:
  *       - name: date
@@ -255,6 +259,8 @@ router.get("/time-slots", mesinCuciCeweController.getAvailableTimeSlots);
  *   get:
  *     tags: [MesinCuciCewe]
  *     summary: Get all available women's washing machine facilities
+ *     security:
+ *       - bearerAuth: []
  *     description: Retrieve list of all available women's washing machine facilities
  *     responses:
  *       200:
@@ -285,6 +291,8 @@ router.get("/facilities", mesinCuciCeweController.getAvailableFacilities);
  *   get:
  *     tags: [MesinCuciCewe]
  *     summary: Get women's washing machine booking by ID
+ *     security:
+ *       - bearerAuth: []
  *     description: Retrieve a specific women's washing machine booking by its ID
  *     parameters:
  *       - name: id
@@ -324,6 +332,8 @@ router.get("/:id", mesinCuciCeweController.getById);
  *   post:
  *     tags: [MesinCuciCewe]
  *     summary: Create new women's washing machine booking
+ *     security:
+ *       - bearerAuth: []
  *     description: Create a new women's washing machine booking with 1-hour time slot validation
  *     requestBody:
  *       required: true
@@ -376,6 +386,8 @@ router.post("/", mesinCuciCeweController.create);
  *   put:
  *     tags: [MesinCuciCewe]
  *     summary: Update women's washing machine booking by ID
+ *     security:
+ *       - bearerAuth: []
  *     description: Update an existing women's washing machine booking with validation
  *     parameters:
  *       - name: id
@@ -423,6 +435,8 @@ router.put("/:id", mesinCuciCeweController.update);
  *   delete:
  *     tags: [MesinCuciCewe]
  *     summary: Delete women's washing machine booking by ID
+ *     security:
+ *       - bearerAuth: []
  *     description: Delete an existing women's washing machine booking
  *     parameters:
  *       - name: id
@@ -462,6 +476,8 @@ router.delete("/:id", mesinCuciCeweController.delete);
  *   get:
  *     tags: [MesinCuciCewe]
  *     summary: Get women's washing machine bookings by borrower ID
+ *     security:
+ *       - bearerAuth: []
  *     description: Retrieve all women's washing machine bookings for a specific borrower
  *     parameters:
  *       - name: peminjamId
@@ -504,6 +520,8 @@ router.get(
  *   get:
  *     tags: [MesinCuciCewe]
  *     summary: Get women's washing machine bookings by facility ID
+ *     security:
+ *       - bearerAuth: []
  *     description: Retrieve all women's washing machine bookings for a specific facility
  *     parameters:
  *       - name: fasilitasId
@@ -546,6 +564,8 @@ router.get(
  *   get:
  *     tags: [MesinCuciCewe]
  *     summary: Get women's washing machine bookings by time range
+ *     security:
+ *       - bearerAuth: []
  *     description: Retrieve all women's washing machine bookings within a specific time range
  *     parameters:
  *       - name: startTime
