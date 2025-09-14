@@ -133,7 +133,7 @@ export class CWSService extends BaseService<
 
   async getAvailableTimeSlots(
     date: Date
-  ): Promise<{ waktuMulai: Date; waktuBerakhir: Date; available: boolean }[]> {
+  ): Promise<{ waktuMulai: Date; waktuBerakhir: Date; display: string; available: boolean }[]> {
     const allSlots = TimeValidationUtil.getTwoHourTimeSlots(date);
     const bookedSlots = await this.cwsRepository.findByTimeRange({
       waktuMulai: {
@@ -163,6 +163,7 @@ export class CWSService extends BaseService<
 
       return {
         ...slot,
+        display: `${slot.waktuMulai.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })} - ${slot.waktuBerakhir.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}`,
         available: !isBooked,
       };
     });

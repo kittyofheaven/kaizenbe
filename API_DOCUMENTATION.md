@@ -1109,22 +1109,29 @@ GET /api/v1/communal/available-slots/2024-01-15/2
     {
       "waktuMulai": "2024-01-15T06:00:00.000Z",
       "waktuBerakhir": "2024-01-15T07:00:00.000Z",
+      "display": "13.00 - 14.00",
       "available": true
     },
     {
       "waktuMulai": "2024-01-15T13:00:00.000Z",
       "waktuBerakhir": "2024-01-15T14:00:00.000Z",
+      "display": "20.00 - 21.00",
       "available": false
     }
   ]
 }
 ```
 
-#### Get Time Slot Suggestions
+#### Get Time Slot Suggestions ⭐ **IMPROVED**
 
 ```http
 GET /api/v1/communal/time-slots?date=2024-01-15
 ```
+
+**✨ NEW FEATURES:**
+- **Smart Availability**: Slot yang sudah dibooking ditandai `available: false`
+- **User-Friendly Display**: Format waktu Indonesia `"13.00 - 14.00"`
+- **Real-time Data**: Selalu menampilkan data availability terkini
 
 **Response:**
 
@@ -1135,15 +1142,29 @@ GET /api/v1/communal/time-slots?date=2024-01-15
     {
       "waktuMulai": "2024-01-15T06:00:00.000Z",
       "waktuBerakhir": "2024-01-15T07:00:00.000Z",
-      "display": "06:00 - 07:00"
+      "display": "13.00 - 14.00",
+      "available": true
     },
     {
-      "waktuMulai": "2024-01-15T07:00:00.000Z",
-      "waktuBerakhir": "2024-01-15T08:00:00.000Z",
-      "display": "07:00 - 08:00"
+      "waktuMulai": "2024-01-15T13:00:00.000Z",
+      "waktuBerakhir": "2024-01-15T14:00:00.000Z",
+      "display": "20.00 - 21.00",
+      "available": false
     }
   ]
 }
+```
+
+**💡 Frontend Tips:**
+```javascript
+// Filter hanya slot yang tersedia
+const availableSlots = response.data.filter(slot => slot.available);
+
+// Buat dropdown dengan display yang user-friendly
+const dropdownOptions = availableSlots.map(slot => ({
+  value: slot.waktuMulai,
+  label: slot.display
+}));
 ```
 
 ---
@@ -1307,10 +1328,50 @@ GET /api/v1/dapur/facilities
 GET /api/v1/dapur/time-range?startTime=2024-01-15T00:00:00.000Z&endTime=2024-01-15T23:59:59.999Z
 ```
 
-#### Get Available Time Slots for Kitchen
+#### Get Available Time Slots for Kitchen ⭐ **IMPROVED**
 
 ```http
 GET /api/v1/dapur/time-slots?date=2024-01-15&facilityId=1
+```
+
+**✨ NEW FEATURES:**
+- **Facility-Specific Filtering**: Parameter `facilityId` untuk cek availability fasilitas tertentu
+- **Smart Availability**: Otomatis exclude waktu yang sudah dibooking
+- **User-Friendly Display**: Format waktu Indonesia
+
+**Parameters:**
+- `date` (required): Format YYYY-MM-DD
+- `facilityId` (optional): ID fasilitas spesifik untuk dicek
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "waktuMulai": "2024-01-15T06:00:00.000Z",
+      "waktuBerakhir": "2024-01-15T07:00:00.000Z",
+      "display": "13.00 - 14.00",
+      "available": true
+    },
+    {
+      "waktuMulai": "2024-01-15T13:00:00.000Z",
+      "waktuBerakhir": "2024-01-15T14:00:00.000Z",
+      "display": "20.00 - 21.00",
+      "available": false
+    }
+  ]
+}
+```
+
+**💡 Usage Examples:**
+```javascript
+// Cek semua fasilitas
+const allSlots = await fetch('/api/v1/dapur/time-slots?date=2024-01-15');
+
+// Cek fasilitas tertentu (Kompor Gas)
+const gasStoveSlots = await fetch('/api/v1/dapur/time-slots?date=2024-01-15&facilityId=1');
 ```
 
 #### Other Endpoints
@@ -1424,6 +1485,184 @@ GET /api/v1/mesin-cuci-cowo/facilities
 - `GET /api/v1/mesin-cuci-cowo/fasilitas/{fasilitasId}` - Get by facility
 - `GET /api/v1/mesin-cuci-cowo/time-range` - Get by time range
 - `GET /api/v1/mesin-cuci-cowo/time-slots?date=2024-01-15&facilityId=1` - Get time slots
+
+---
+
+## 🕐 Smart Time Slots ⭐ **NEW FEATURE**
+
+### 🎯 Overview
+
+Semua endpoint booking sekarang memiliki fitur **Smart Time Slots** yang otomatis menampilkan availability real-time dan format user-friendly.
+
+### 🚀 Key Features
+
+1. **🔍 Real-time Availability Check**
+   - Slot yang sudah dibooking otomatis ditandai `available: false`
+   - Data selalu up-to-date dengan database
+
+2. **🎨 User-Friendly Display Format**
+   - Format waktu Indonesia: `"13.00 - 14.00"`
+   - Mudah dibaca untuk frontend UI
+
+3. **🎯 Facility-Specific Filtering**
+   - Parameter `facilityId` untuk cek availability fasilitas tertentu
+   - Berguna untuk multi-facility bookings
+
+### 📋 Supported Endpoints
+
+| Endpoint | Facility Filtering | Format |
+|----------|-------------------|--------|
+| `/api/v1/mesin-cuci-cewe/time-slots` | ✅ `facilityId` | 1-hour slots |
+| `/api/v1/mesin-cuci-cowo/time-slots` | ✅ `facilityId` | 1-hour slots |
+| `/api/v1/dapur/time-slots` | ✅ `facilityId` | 1-hour slots |
+| `/api/v1/communal/available-slots` | ✅ `lantai` | 1-hour slots |
+| `/api/v1/serbaguna/available-slots` | ✅ `areaId` | 1-hour slots |
+
+### 💻 Frontend Integration Examples
+
+#### 1. Basic Usage - Get Available Slots
+
+```javascript
+// GET available time slots
+const response = await fetch('/api/v1/mesin-cuci-cewe/time-slots?date=2024-01-15', {
+  headers: {
+    'Authorization': `Bearer ${token}`
+  }
+});
+
+const { data } = await response.json();
+
+// Filter hanya slot yang tersedia
+const availableSlots = data.filter(slot => slot.available);
+console.log(`Found ${availableSlots.length} available slots`);
+```
+
+#### 2. Create Dropdown Options
+
+```javascript
+// Buat options untuk dropdown/select
+const createTimeSlotOptions = (slots) => {
+  return slots
+    .filter(slot => slot.available)
+    .map(slot => ({
+      value: slot.waktuMulai,
+      label: slot.display,
+      data: slot
+    }));
+};
+
+const options = createTimeSlotOptions(data);
+// Result: [{ value: "2024-01-15T06:00:00.000Z", label: "13.00 - 14.00", data: {...} }]
+```
+
+#### 3. Facility-Specific Check
+
+```javascript
+// Cek availability untuk fasilitas tertentu
+const checkFacilityAvailability = async (date, facilityId) => {
+  const response = await fetch(
+    `/api/v1/dapur/time-slots?date=${date}&facilityId=${facilityId}`,
+    { headers: { 'Authorization': `Bearer ${token}` } }
+  );
+  
+  const { data } = await response.json();
+  return data.filter(slot => slot.available);
+};
+
+// Usage
+const kompor1Available = await checkFacilityAvailability('2024-01-15', '1');
+const kompor2Available = await checkFacilityAvailability('2024-01-15', '2');
+```
+
+#### 4. Real-time Availability Component
+
+```javascript
+// React component example
+const TimeSlotSelector = ({ date, facilityId, onSelect }) => {
+  const [slots, setSlots] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  const fetchSlots = async () => {
+    setLoading(true);
+    try {
+      const url = `/api/v1/dapur/time-slots?date=${date}${facilityId ? `&facilityId=${facilityId}` : ''}`;
+      const response = await fetch(url, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const { data } = await response.json();
+      setSlots(data);
+    } catch (error) {
+      console.error('Failed to fetch slots:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (date) fetchSlots();
+  }, [date, facilityId]);
+
+  return (
+    <select onChange={(e) => onSelect(e.target.value)}>
+      <option value="">Pilih waktu...</option>
+      {slots
+        .filter(slot => slot.available)
+        .map(slot => (
+          <option key={slot.waktuMulai} value={slot.waktuMulai}>
+            {slot.display}
+          </option>
+        ))
+      }
+    </select>
+  );
+};
+```
+
+### 🔄 Response Format
+
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "waktuMulai": "2024-01-15T06:00:00.000Z",
+      "waktuBerakhir": "2024-01-15T07:00:00.000Z",
+      "display": "13.00 - 14.00",
+      "available": true
+    },
+    {
+      "waktuMulai": "2024-01-15T07:00:00.000Z",
+      "waktuBerakhir": "2024-01-15T08:00:00.000Z",
+      "display": "14.00 - 15.00",
+      "available": false
+    }
+  ],
+  "message": "Saran slot waktu berhasil diambil"
+}
+```
+
+### 🎯 Best Practices
+
+1. **Always Filter Available Slots**
+   ```javascript
+   const availableOnly = data.filter(slot => slot.available);
+   ```
+
+2. **Use Display Property for UI**
+   ```javascript
+   const displayTime = slot.display; // "13.00 - 14.00"
+   ```
+
+3. **Implement Real-time Refresh**
+   ```javascript
+   // Refresh slots setiap 30 detik atau setelah booking
+   setInterval(fetchSlots, 30000);
+   ```
+
+4. **Handle Loading States**
+   ```javascript
+   if (loading) return <div>Loading time slots...</div>;
+   ```
 
 ---
 

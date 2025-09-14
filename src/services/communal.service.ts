@@ -150,7 +150,7 @@ export class CommunalService extends BaseService<
   async getAvailableTimeSlots(
     date: Date,
     lantai: bigint
-  ): Promise<{ waktuMulai: Date; waktuBerakhir: Date; available: boolean }[]> {
+  ): Promise<{ waktuMulai: Date; waktuBerakhir: Date; display: string; available: boolean }[]> {
     const allSlots = TimeValidationUtil.getOneHourTimeSlots(date);
     const bookedSlots = await this.communalRepository.findByTimeRange({
       waktuMulai: {
@@ -182,6 +182,7 @@ export class CommunalService extends BaseService<
 
       return {
         ...slot,
+        display: `${slot.waktuMulai.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })} - ${slot.waktuBerakhir.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}`,
         available: !isBooked,
       };
     });
