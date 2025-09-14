@@ -15,7 +15,7 @@ export class CWSRepository extends BaseRepository<
     const { skip, take } = this.getPaginationParams(params);
     const orderBy = this.getSortParams(params);
 
-    return this.db.cws.findMany({
+    return this.db.cWS.findMany({
       skip,
       take,
       ...(orderBy && { orderBy }),
@@ -33,7 +33,7 @@ export class CWSRepository extends BaseRepository<
   }
 
   async findById(id: bigint): Promise<CWS | null> {
-    return this.db.cws.findUnique({
+    return this.db.cWS.findUnique({
       where: { id },
       include: {
         penanggungJawab: {
@@ -49,7 +49,7 @@ export class CWSRepository extends BaseRepository<
   }
 
   async create(data: Prisma.CWSCreateInput): Promise<CWS> {
-    return this.db.cws.create({
+    return this.db.cWS.create({
       data,
       include: {
         penanggungJawab: {
@@ -65,7 +65,7 @@ export class CWSRepository extends BaseRepository<
   }
 
   async update(id: bigint, data: Prisma.CWSUpdateInput): Promise<CWS> {
-    return this.db.cws.update({
+    return this.db.cWS.update({
       where: { id },
       data,
       include: {
@@ -82,14 +82,14 @@ export class CWSRepository extends BaseRepository<
   }
 
   async delete(id: bigint): Promise<void> {
-    await this.db.cws.delete({
+    await this.db.cWS.delete({
       where: { id },
     });
   }
 
   // Custom methods
   async findByTimeRange(filter: TimeRangeFilter): Promise<CWS[]> {
-    return this.db.cws.findMany({
+    return this.db.cWS.findMany({
       where: {
         ...(filter.waktuMulai && { waktuMulai: filter.waktuMulai }),
         ...(filter.waktuBerakhir && { waktuBerakhir: filter.waktuBerakhir }),
@@ -107,7 +107,7 @@ export class CWSRepository extends BaseRepository<
   }
 
   async findByPenanggungJawab(penanggungJawabId: bigint): Promise<CWS[]> {
-    return this.db.cws.findMany({
+    return this.db.cWS.findMany({
       where: {
         idPenanggungJawab: penanggungJawabId,
       },
@@ -129,7 +129,7 @@ export class CWSRepository extends BaseRepository<
     waktuBerakhir: Date,
     excludeId?: bigint
   ): Promise<CWS[]> {
-    return this.db.cws.findMany({
+    return this.db.cWS.findMany({
       where: {
         ...(excludeId && { id: { not: excludeId } }),
         OR: [
