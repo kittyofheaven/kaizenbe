@@ -6,9 +6,9 @@ import serbagunaRoutes from "./serbaguna.routes";
 import mesinCuciCeweRoutes from "./mesin-cuci-cewe.routes";
 import mesinCuciCowoRoutes from "./mesin-cuci-cowo.routes";
 import dapurRoutes from "./dapur.routes";
+import cwsRoutes from "./cws.routes";
 import { AuthMiddleware } from "../middleware/auth.middleware";
 // Import other routes here
-// import cwsRoutes from './cws.routes';
 // import theaterRoutes from './theater.routes';
 
 const router = Router();
@@ -42,7 +42,7 @@ router.use(
   mesinCuciCowoRoutes
 );
 router.use(`${API_VERSION}/dapur`, AuthMiddleware.authenticate, dapurRoutes);
-// router.use(`${API_VERSION}/cws`, AuthMiddleware.authenticate, cwsRoutes);
+router.use(`${API_VERSION}/cws`, AuthMiddleware.authenticate, cwsRoutes);
 // router.use(`${API_VERSION}/theater`, AuthMiddleware.authenticate, theaterRoutes);
 
 // Health check
@@ -70,8 +70,8 @@ router.get(`${API_VERSION}`, (req, res) => {
       mesinCuciCewe: `${API_VERSION}/mesin-cuci-cewe`,
       mesinCuciCowo: `${API_VERSION}/mesin-cuci-cowo`,
       dapur: `${API_VERSION}/dapur`,
+      cws: `${API_VERSION}/cws`,
       // Add other endpoints here
-      // cws: `${API_VERSION}/cws`,
       // theater: `${API_VERSION}/theater`,
     },
     authentication: {
