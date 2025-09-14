@@ -1129,6 +1129,7 @@ GET /api/v1/communal/time-slots?date=2024-01-15
 ```
 
 **✨ NEW FEATURES:**
+
 - **Smart Availability**: Slot yang sudah dibooking ditandai `available: false`
 - **User-Friendly Display**: Format waktu Indonesia `"13.00 - 14.00"`
 - **Real-time Data**: Selalu menampilkan data availability terkini
@@ -1156,14 +1157,15 @@ GET /api/v1/communal/time-slots?date=2024-01-15
 ```
 
 **💡 Frontend Tips:**
+
 ```javascript
 // Filter hanya slot yang tersedia
-const availableSlots = response.data.filter(slot => slot.available);
+const availableSlots = response.data.filter((slot) => slot.available);
 
 // Buat dropdown dengan display yang user-friendly
-const dropdownOptions = availableSlots.map(slot => ({
+const dropdownOptions = availableSlots.map((slot) => ({
   value: slot.waktuMulai,
-  label: slot.display
+  label: slot.display,
 }));
 ```
 
@@ -1335,11 +1337,13 @@ GET /api/v1/dapur/time-slots?date=2024-01-15&facilityId=1
 ```
 
 **✨ NEW FEATURES:**
+
 - **Facility-Specific Filtering**: Parameter `facilityId` untuk cek availability fasilitas tertentu
 - **Smart Availability**: Otomatis exclude waktu yang sudah dibooking
 - **User-Friendly Display**: Format waktu Indonesia
 
 **Parameters:**
+
 - `date` (required): Format YYYY-MM-DD
 - `facilityId` (optional): ID fasilitas spesifik untuk dicek
 
@@ -1366,12 +1370,15 @@ GET /api/v1/dapur/time-slots?date=2024-01-15&facilityId=1
 ```
 
 **💡 Usage Examples:**
+
 ```javascript
 // Cek semua fasilitas
-const allSlots = await fetch('/api/v1/dapur/time-slots?date=2024-01-15');
+const allSlots = await fetch("/api/v1/dapur/time-slots?date=2024-01-15");
 
 // Cek fasilitas tertentu (Kompor Gas)
-const gasStoveSlots = await fetch('/api/v1/dapur/time-slots?date=2024-01-15&facilityId=1');
+const gasStoveSlots = await fetch(
+  "/api/v1/dapur/time-slots?date=2024-01-15&facilityId=1"
+);
 ```
 
 #### Other Endpoints
@@ -1488,6 +1495,150 @@ GET /api/v1/mesin-cuci-cowo/facilities
 
 ---
 
+### CWS (Community Work Space) Booking ⭐ **NEW**
+
+#### Get All CWS Bookings
+
+```http
+GET /api/v1/cws
+```
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": "1",
+      "idPenanggungJawab": "1",
+      "waktuMulai": "2024-01-15T14:00:00.000Z",
+      "waktuBerakhir": "2024-01-15T16:00:00.000Z",
+      "jumlahPengguna": "15",
+      "keterangan": "Team collaboration session",
+      "isDone": false,
+      "createdAt": "2024-01-15T10:30:00.000Z",
+      "updatedAt": "2024-01-15T10:30:00.000Z",
+      "penanggungJawab": {
+        "id": "1",
+        "namaLengkap": "John Doe",
+        "namaPanggilan": "John",
+        "nomorWa": "+6281234567890"
+      }
+    }
+  ]
+}
+```
+
+#### Create CWS Booking
+
+```http
+POST /api/v1/cws
+```
+
+**Request Body:**
+
+```json
+{
+  "idPenanggungJawab": "1",
+  "waktuMulai": "2024-01-15T14:00:00.000Z",
+  "waktuBerakhir": "2024-01-15T16:00:00.000Z",
+  "jumlahPengguna": "15",
+  "keterangan": "Team collaboration session",
+  "isDone": false
+}
+```
+
+**⚠️ CWS Special Requirements:**
+- **2-hour time slots only** (e.g., 14:00-16:00, 16:00-18:00)
+- **No 1-hour slots** - will be rejected with validation error
+- **Available slots**: 06:00-08:00, 08:00-10:00, 10:00-12:00, 12:00-14:00, 14:00-16:00, 16:00-18:00, 18:00-20:00, 20:00-22:00
+
+**Validasi:**
+- ✅ Waktu harus dalam slot 2 jam penuh (contoh: 14:00-16:00)
+- ✅ Waktu tidak boleh di masa lalu
+- ✅ Penanggung jawab harus exist di database
+- ✅ Ruang tidak boleh double booking
+
+#### Update CWS Booking
+
+```http
+PUT /api/v1/cws/{id}
+```
+
+#### Delete CWS Booking
+
+```http
+DELETE /api/v1/cws/{id}
+```
+
+#### Get CWS by Responsible Person
+
+```http
+GET /api/v1/cws/penanggung-jawab/{penanggungJawabId}
+```
+
+#### Get CWS Time Slots ⭐ **SMART SLOTS**
+
+```http
+GET /api/v1/cws/time-slots?date=2024-01-15
+```
+
+**✨ Features:**
+- **2-hour slots only** (berbeda dari endpoint lain yang 1 jam)
+- **Real-time availability** checking
+- **User-friendly display** format
+- **Smart conflict detection**
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "waktuMulai": "2024-01-15T06:00:00.000Z",
+      "waktuBerakhir": "2024-01-15T08:00:00.000Z",
+      "display": "13.00 - 15.00",
+      "available": true
+    },
+    {
+      "waktuMulai": "2024-01-15T14:00:00.000Z",
+      "waktuBerakhir": "2024-01-15T16:00:00.000Z",
+      "display": "21.00 - 23.00",
+      "available": false
+    }
+  ]
+}
+```
+
+**💡 Frontend Usage:**
+```javascript
+// Get available CWS time slots (2-hour only)
+const response = await fetch('/api/v1/cws/time-slots?date=2024-01-15', {
+  headers: { 'Authorization': `Bearer ${token}` }
+});
+
+const { data } = await response.json();
+
+// Filter hanya slot yang tersedia (2-hour slots)
+const available2HourSlots = data.filter(slot => slot.available);
+
+// Buat dropdown untuk 2-hour slots
+const cwsOptions = available2HourSlots.map(slot => ({
+  value: slot.waktuMulai,
+  label: slot.display, // "13.00 - 15.00"
+  duration: '2 hours'
+}));
+```
+
+#### Other CWS Endpoints
+
+- `GET /api/v1/cws/{id}` - Get by ID
+- `GET /api/v1/cws/time-suggestions?date=2024-01-15` - Get time suggestions (without availability check)
+
+---
+
 ## 🕐 Smart Time Slots ⭐ **NEW FEATURE**
 
 ### 🎯 Overview
@@ -1497,10 +1648,12 @@ Semua endpoint booking sekarang memiliki fitur **Smart Time Slots** yang otomati
 ### 🚀 Key Features
 
 1. **🔍 Real-time Availability Check**
+
    - Slot yang sudah dibooking otomatis ditandai `available: false`
    - Data selalu up-to-date dengan database
 
 2. **🎨 User-Friendly Display Format**
+
    - Format waktu Indonesia: `"13.00 - 14.00"`
    - Mudah dibaca untuk frontend UI
 
@@ -1510,13 +1663,14 @@ Semua endpoint booking sekarang memiliki fitur **Smart Time Slots** yang otomati
 
 ### 📋 Supported Endpoints
 
-| Endpoint | Facility Filtering | Format |
-|----------|-------------------|--------|
-| `/api/v1/mesin-cuci-cewe/time-slots` | ✅ `facilityId` | 1-hour slots |
-| `/api/v1/mesin-cuci-cowo/time-slots` | ✅ `facilityId` | 1-hour slots |
-| `/api/v1/dapur/time-slots` | ✅ `facilityId` | 1-hour slots |
-| `/api/v1/communal/available-slots` | ✅ `lantai` | 1-hour slots |
-| `/api/v1/serbaguna/available-slots` | ✅ `areaId` | 1-hour slots |
+| Endpoint                             | Facility Filtering | Format        |
+| ------------------------------------ | ------------------ | ------------- |
+| `/api/v1/mesin-cuci-cewe/time-slots` | ✅ `facilityId`    | 1-hour slots  |
+| `/api/v1/mesin-cuci-cowo/time-slots` | ✅ `facilityId`    | 1-hour slots  |
+| `/api/v1/dapur/time-slots`           | ✅ `facilityId`    | 1-hour slots  |
+| `/api/v1/communal/available-slots`   | ✅ `lantai`        | 1-hour slots  |
+| `/api/v1/serbaguna/available-slots`  | ✅ `areaId`        | 1-hour slots  |
+| `/api/v1/cws/time-slots` ⭐          | ❌ No filtering    | **2-hour slots** |
 
 ### 💻 Frontend Integration Examples
 
@@ -1524,16 +1678,19 @@ Semua endpoint booking sekarang memiliki fitur **Smart Time Slots** yang otomati
 
 ```javascript
 // GET available time slots
-const response = await fetch('/api/v1/mesin-cuci-cewe/time-slots?date=2024-01-15', {
-  headers: {
-    'Authorization': `Bearer ${token}`
+const response = await fetch(
+  "/api/v1/mesin-cuci-cewe/time-slots?date=2024-01-15",
+  {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
   }
-});
+);
 
 const { data } = await response.json();
 
 // Filter hanya slot yang tersedia
-const availableSlots = data.filter(slot => slot.available);
+const availableSlots = data.filter((slot) => slot.available);
 console.log(`Found ${availableSlots.length} available slots`);
 ```
 
@@ -1543,11 +1700,11 @@ console.log(`Found ${availableSlots.length} available slots`);
 // Buat options untuk dropdown/select
 const createTimeSlotOptions = (slots) => {
   return slots
-    .filter(slot => slot.available)
-    .map(slot => ({
+    .filter((slot) => slot.available)
+    .map((slot) => ({
       value: slot.waktuMulai,
       label: slot.display,
-      data: slot
+      data: slot,
     }));
 };
 
@@ -1562,19 +1719,47 @@ const options = createTimeSlotOptions(data);
 const checkFacilityAvailability = async (date, facilityId) => {
   const response = await fetch(
     `/api/v1/dapur/time-slots?date=${date}&facilityId=${facilityId}`,
-    { headers: { 'Authorization': `Bearer ${token}` } }
+    { headers: { Authorization: `Bearer ${token}` } }
   );
-  
+
   const { data } = await response.json();
-  return data.filter(slot => slot.available);
+  return data.filter((slot) => slot.available);
 };
 
 // Usage
-const kompor1Available = await checkFacilityAvailability('2024-01-15', '1');
-const kompor2Available = await checkFacilityAvailability('2024-01-15', '2');
+const kompor1Available = await checkFacilityAvailability("2024-01-15", "1");
+const kompor2Available = await checkFacilityAvailability("2024-01-15", "2");
 ```
 
-#### 4. Real-time Availability Component
+#### 4. CWS 2-Hour Slots Example ⭐
+
+```javascript
+// Get CWS time slots (2-hour slots only)
+const getCWSTimeSlots = async (date) => {
+  const response = await fetch(
+    `/api/v1/cws/time-slots?date=${date}`,
+    { headers: { Authorization: `Bearer ${token}` } }
+  );
+  
+  const { data } = await response.json();
+  
+  // Filter available 2-hour slots
+  const available2HourSlots = data.filter(slot => slot.available);
+  
+  return available2HourSlots.map(slot => ({
+    value: slot.waktuMulai,
+    label: slot.display, // "13.00 - 15.00"
+    duration: '2 hours',
+    type: 'CWS'
+  }));
+};
+
+// Usage - berbeda dari endpoint lain yang 1 jam
+const cwsSlots = await getCWSTimeSlots('2024-01-15');
+console.log('Available 2-hour CWS slots:', cwsSlots);
+```
+
+#### 5. Real-time Availability Component
 
 ```javascript
 // React component example
@@ -1585,14 +1770,16 @@ const TimeSlotSelector = ({ date, facilityId, onSelect }) => {
   const fetchSlots = async () => {
     setLoading(true);
     try {
-      const url = `/api/v1/dapur/time-slots?date=${date}${facilityId ? `&facilityId=${facilityId}` : ''}`;
+      const url = `/api/v1/dapur/time-slots?date=${date}${
+        facilityId ? `&facilityId=${facilityId}` : ""
+      }`;
       const response = await fetch(url, {
-        headers: { 'Authorization': `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
       });
       const { data } = await response.json();
       setSlots(data);
     } catch (error) {
-      console.error('Failed to fetch slots:', error);
+      console.error("Failed to fetch slots:", error);
     } finally {
       setLoading(false);
     }
@@ -1606,13 +1793,12 @@ const TimeSlotSelector = ({ date, facilityId, onSelect }) => {
     <select onChange={(e) => onSelect(e.target.value)}>
       <option value="">Pilih waktu...</option>
       {slots
-        .filter(slot => slot.available)
-        .map(slot => (
+        .filter((slot) => slot.available)
+        .map((slot) => (
           <option key={slot.waktuMulai} value={slot.waktuMulai}>
             {slot.display}
           </option>
-        ))
-      }
+        ))}
     </select>
   );
 };
@@ -1644,16 +1830,19 @@ const TimeSlotSelector = ({ date, facilityId, onSelect }) => {
 ### 🎯 Best Practices
 
 1. **Always Filter Available Slots**
+
    ```javascript
-   const availableOnly = data.filter(slot => slot.available);
+   const availableOnly = data.filter((slot) => slot.available);
    ```
 
 2. **Use Display Property for UI**
+
    ```javascript
    const displayTime = slot.display; // "13.00 - 14.00"
    ```
 
 3. **Implement Real-time Refresh**
+
    ```javascript
    // Refresh slots setiap 30 detik atau setelah booking
    setInterval(fetchSlots, 30000);
@@ -2575,5 +2764,97 @@ mariadb -h localhost -P 3306 -u root < database_schema.sql
 # 5. Start fresh
 npm run dev
 ```
+
+---
+
+## 📋 **Complete Endpoint Summary**
+
+### 🔐 **Authentication Endpoints**
+- `POST /api/v1/auth/login` - Login to get JWT token
+- ~~`POST /api/v1/auth/register`~~ - **TEMPORARILY DISABLED**
+
+### 👥 **User Management**
+- `GET /api/v1/users` - Get all users
+- `GET /api/v1/users/{id}` - Get user by ID
+- `PUT /api/v1/users/{id}` - Update user
+- `DELETE /api/v1/users/{id}` - Delete user
+- `GET /api/v1/users/angkatan/{angkatanId}` - Get users by batch
+- `GET /api/v1/users/wa/{nomorWa}` - Get user by WhatsApp number
+
+### 🏢 **Booking Endpoints**
+
+#### **Communal Room (1-hour slots)**
+- `GET /api/v1/communal` - Get all bookings
+- `POST /api/v1/communal` - Create booking
+- `GET /api/v1/communal/{id}` - Get by ID
+- `PUT /api/v1/communal/{id}` - Update booking
+- `DELETE /api/v1/communal/{id}` - Delete booking
+- `GET /api/v1/communal/penanggung-jawab/{id}` - Get by responsible person
+- `GET /api/v1/communal/lantai/{lantai}` - Get by floor
+- `GET /api/v1/communal/available-slots/{date}/{lantai}` - ⭐ Smart time slots
+
+#### **Serbaguna Area (1-hour slots)**
+- `GET /api/v1/serbaguna` - Get all bookings
+- `POST /api/v1/serbaguna` - Create booking
+- `GET /api/v1/serbaguna/{id}` - Get by ID
+- `PUT /api/v1/serbaguna/{id}` - Update booking
+- `DELETE /api/v1/serbaguna/{id}` - Delete booking
+- `GET /api/v1/serbaguna/areas` - Get available areas
+- `GET /api/v1/serbaguna/area/{areaId}` - Get by area
+- `GET /api/v1/serbaguna/available-slots/{date}/{areaId}` - ⭐ Smart time slots
+
+#### **Kitchen/Dapur (1-hour slots)**
+- `GET /api/v1/dapur` - Get all bookings
+- `POST /api/v1/dapur` - Create booking
+- `GET /api/v1/dapur/{id}` - Get by ID
+- `PUT /api/v1/dapur/{id}` - Update booking
+- `DELETE /api/v1/dapur/{id}` - Delete booking
+- `GET /api/v1/dapur/facilities` - Get available facilities
+- `GET /api/v1/dapur/time-slots?date=YYYY-MM-DD&facilityId=X` - ⭐ Smart time slots
+
+#### **Women's Washing Machine (1-hour slots)**
+- `GET /api/v1/mesin-cuci-cewe` - Get all bookings
+- `POST /api/v1/mesin-cuci-cewe` - Create booking
+- `GET /api/v1/mesin-cuci-cewe/{id}` - Get by ID
+- `PUT /api/v1/mesin-cuci-cewe/{id}` - Update booking
+- `DELETE /api/v1/mesin-cuci-cewe/{id}` - Delete booking
+- `GET /api/v1/mesin-cuci-cewe/facilities` - Get available facilities
+- `GET /api/v1/mesin-cuci-cewe/time-slots?date=YYYY-MM-DD&facilityId=X` - ⭐ Smart time slots
+
+#### **Men's Washing Machine (1-hour slots)**
+- `GET /api/v1/mesin-cuci-cowo` - Get all bookings
+- `POST /api/v1/mesin-cuci-cowo` - Create booking
+- `GET /api/v1/mesin-cuci-cowo/{id}` - Get by ID
+- `PUT /api/v1/mesin-cuci-cowo/{id}` - Update booking
+- `DELETE /api/v1/mesin-cuci-cowo/{id}` - Delete booking
+- `GET /api/v1/mesin-cuci-cowo/facilities` - Get available facilities
+- `GET /api/v1/mesin-cuci-cowo/time-slots?date=YYYY-MM-DD&facilityId=X` - ⭐ Smart time slots
+
+#### **CWS - Community Work Space (2-hour slots)** ⭐ **NEW**
+- `GET /api/v1/cws` - Get all bookings
+- `POST /api/v1/cws` - Create booking
+- `GET /api/v1/cws/{id}` - Get by ID
+- `PUT /api/v1/cws/{id}` - Update booking
+- `DELETE /api/v1/cws/{id}` - Delete booking
+- `GET /api/v1/cws/penanggung-jawab/{id}` - Get by responsible person
+- `GET /api/v1/cws/time-slots?date=YYYY-MM-DD` - ⭐ Smart time slots (2-hour)
+
+### 🔑 **Key Differences**
+
+| Feature | Most Endpoints | CWS |
+|---------|---------------|-----|
+| **Time Slots** | 1-hour slots | **2-hour slots** |
+| **Available Hours** | 06:00-22:00 (16 slots) | 06:00-22:00 (8 slots) |
+| **Facility Filtering** | ✅ Supported | ❌ No filtering |
+| **Smart Availability** | ✅ Available | ✅ Available |
+
+### 🚀 **Quick Access**
+
+- **🏠 Server**: `http://localhost:3000`
+- **📚 Swagger UI**: `http://localhost:3000/api/docs`
+- **🔍 Health Check**: `http://localhost:3000/health`
+- **📋 API Info**: `http://localhost:3000/api/v1`
+
+---
 
 **Happy Coding! 🚀**
