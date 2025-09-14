@@ -232,8 +232,57 @@ export class MesinCuciCowoService extends BaseService<
   async getAvailableTimeSlots(
     date: string,
     facilityId?: bigint
-  ): Promise<any[]> {
+  ): Promise<
+    {
+      waktuMulai: Date;
+      waktuBerakhir: Date;
+      display: string;
+      available: boolean;
+    }[]
+  > {
     const dateObj = new Date(date);
-    return TimeValidationUtil.getOneHourTimeSlots(dateObj);
+    const allSlots = TimeValidationUtil.getOneHourTimeSlots(dateObj);
+
+    // Get all bookings for the specified date
+    const startTime = new Date(
+      dateObj.getFullYear(),
+      dateObj.getMonth(),
+      dateObj.getDate(),
+      0,
+      0,
+      0
+    );
+    const endTime = new Date(
+      dateObj.getFullYear(),
+      dateObj.getMonth(),
+      dateObj.getDate(),
+      23,
+      59,
+      59
+    );
+    const bookedSlots = await this.mesinCuciCowoRepository.findByTimeRange(
+      startTime,
+      endTime
+    );
+
+    return allSlots.map((slot) => {
+      const isBooked = bookedSlots.some((booking) => {
+        // If facilityId is provided, check for that specific facility
+        if (facilityId) {
+          return (
+            booking.idFasilitas === facilityId &&
+            booking.waktuMulai.getTime() === slot.waktuMulai.getTime()
+          );
+        }
+        // If no facilityId provided, check if any facility is booked at this time
+        return booking.waktuMulai.getTime() === slot.waktuMulai.getTime();
+      });
+
+      return {
+        ...slot,
+        display: `${slot.waktuMulai.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })} - ${slot.waktuBerakhir.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}`,
+        available: !isBooked,
+      };
+    });
   }
 }
