@@ -362,6 +362,97 @@ router.get("/time-suggestions", cwsController.getTimeSlotSuggestions);
 
 /**
  * @swagger
+ * /api/v1/cws/date/{date}:
+ *   get:
+ *     tags: [CWS]
+ *     summary: Get CWS bookings for specific date
+ *     security:
+ *       - bearerAuth: []
+ *     description: |
+ *       Get all CWS bookings for a specific date with detailed information
+ *
+ *       **✨ Features:**
+ *       - Get all bookings for a specific date
+ *       - Includes responsible person details
+ *       - Ordered by start time
+ *       - Perfect for daily schedule views
+ *     parameters:
+ *       - name: date
+ *         in: path
+ *         required: true
+ *         description: Date to get bookings for (YYYY-MM-DD format)
+ *         schema:
+ *           type: string
+ *           format: date
+ *           example: "2025-09-15"
+ *     responses:
+ *       200:
+ *         description: CWS bookings for the specified date retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/CWS'
+ *                 message:
+ *                   type: string
+ *                   example: "Data booking CWS untuk tanggal 2025-09-15 berhasil diambil"
+ *       400:
+ *         $ref: '#/components/responses/BadRequest'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       500:
+ *         $ref: '#/components/responses/InternalServerError'
+ */
+router.get("/date/:date", cwsController.getBookingsByDate);
+
+/**
+ * @swagger
+ * /api/v1/cws/mark-past-done:
+ *   post:
+ *     tags: [CWS]
+ *     summary: Mark past bookings as done
+ *     security:
+ *       - bearerAuth: []
+ *     description: |
+ *       Automatically mark all CWS bookings that have ended as done
+ *
+ *       **✨ Features:**
+ *       - Finds all bookings where waktuBerakhir < current time
+ *       - Marks bookings with isDone = false as isDone = true
+ *       - Useful for cleanup and status management
+ *     responses:
+ *       200:
+ *         description: Past bookings marked as done successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: null
+ *                   example: null
+ *                 message:
+ *                   type: string
+ *                   example: "Past bookings berhasil di-mark sebagai done"
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       500:
+ *         $ref: '#/components/responses/InternalServerError'
+ */
+router.post("/mark-past-done", cwsController.markPastBookingsAsDone);
+
+/**
+ * @swagger
  * /api/v1/cws/penanggung-jawab/{penanggungJawabId}:
  *   get:
  *     tags: [CWS]

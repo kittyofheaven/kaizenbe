@@ -1,6 +1,9 @@
 import { CWS, Prisma } from "@prisma/client";
 import { BaseService } from "./base.service";
-import { CWSRepository } from "../repositories/cws.repository";
+import {
+  CWSRepository,
+  CWSWithRelations,
+} from "../repositories/cws.repository";
 import { TimeValidationUtil } from "../utils/time-validation";
 import { prisma } from "../utils/database";
 
@@ -54,6 +57,15 @@ export class CWSService extends BaseService<
     // Validate future time
     if (!TimeValidationUtil.validateFutureTime(data.waktuMulai)) {
       throw new Error("Waktu booking tidak boleh di masa lalu");
+    }
+
+    // Validate Thursday restriction
+    const bookingDate = new Date(data.waktuMulai);
+    const dayOfWeek = bookingDate.getDay(); // 0 = Sunday, 1 = Monday, ..., 4 = Thursday
+    if (dayOfWeek === 4) {
+      throw new Error(
+        "CWS tidak bisa di book pada hari Kamis karena public only"
+      );
     }
 
     // Validate foreign key - check if user exists
@@ -131,9 +143,14 @@ export class CWSService extends BaseService<
     return this.cwsRepository.findByPenanggungJawab(penanggungJawabId);
   }
 
-  async getAvailableTimeSlots(
-    date: Date
-  ): Promise<{ waktuMulai: Date; waktuBerakhir: Date; display: string; available: boolean }[]> {
+  async getAvailableTimeSlots(date: Date): Promise<
+    {
+      waktuMulai: Date;
+      waktuBerakhir: Date;
+      display: string;
+      available: boolean;
+    }[]
+  > {
     const allSlots = TimeValidationUtil.getTwoHourTimeSlots(date);
     const bookedSlots = await this.cwsRepository.findByTimeRange({
       waktuMulai: {
@@ -163,7 +180,15 @@ export class CWSService extends BaseService<
 
       return {
         ...slot,
-        display: `${slot.waktuMulai.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })} - ${slot.waktuBerakhir.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}`,
+        display: `${slot.waktuMulai.toLocaleTimeString("id-ID", {
+          hour: "2-digit",
+          minute: "2-digit",
+          timeZone: "Asia/Jakarta", // WIB (UTC+7)
+        })} - ${slot.waktuBerakhir.toLocaleTimeString("id-ID", {
+          hour: "2-digit",
+          minute: "2-digit",
+          timeZone: "Asia/Jakarta", // WIB (UTC+7)
+        })}`,
         available: !isBooked,
       };
     });
@@ -203,5 +228,46 @@ export class CWSService extends BaseService<
     }
 
     return input;
+  }
+
+  async getBookingsByDate(date: string): Promise<CWSWithRelations[]> {
+    const dateObj = new Date(date);
+    const startOfDay = new Date(
+      dateObj.getFullYear(),
+      dateObj.getMonth(),
+      dateObj.getDate(),
+      0,
+      0,
+      0
+    );
+    const endOfDay = new Date(
+      dateObj.getFullYear(),
+      dateObj.getMonth(),
+      dateObj.getDate(),
+      23,
+      59,
+      59
+    );
+
+    return this.cwsRepository.findByDateRange(startOfDay, endOfDay);
+  }
+
+  async markPastBookingsAsDone(): Promise<void> {
+    const now = new Date();
+
+    // Find all bookings that have ended but are not marked as done
+    const pastBookings = await this.cwsRepository.findByTimeRange({
+      waktuBerakhir: {
+        lte: now,
+      },
+    });
+
+    // Filter only bookings that are not done yet
+    const undoneBookings = pastBookings.filter((booking) => !booking.isDone);
+
+    // Mark all past bookings as done
+    for (const booking of undoneBookings) {
+      await this.cwsRepository.update(booking.id, { isDone: true });
+    }
   }
 }

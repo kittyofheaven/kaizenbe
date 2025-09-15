@@ -54,10 +54,20 @@ export class CWSController extends BaseController<
 
       // Check if time is in the past
       if (createData.waktuMulai < new Date()) {
+        ResponseUtil.badRequest(res, "Waktu booking tidak boleh di masa lalu", [
+          "Waktu mulai harus di masa depan",
+        ]);
+        return;
+      }
+
+      // Check Thursday restriction
+      const bookingDate = new Date(createData.waktuMulai);
+      const dayOfWeek = bookingDate.getDay(); // 0 = Sunday, 1 = Monday, ..., 4 = Thursday
+      if (dayOfWeek === 4) {
         ResponseUtil.badRequest(
           res,
-          "Waktu booking tidak boleh di masa lalu",
-          ["Waktu mulai harus di masa depan"]
+          "CWS tidak bisa di book pada hari Kamis karena public only",
+          ["Hari Kamis adalah hari public only untuk CWS"]
         );
         return;
       }
@@ -227,6 +237,50 @@ export class CWSController extends BaseController<
         res,
         suggestions,
         "Saran slot waktu berhasil diambil"
+      );
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  getBookingsByDate = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      const { date } = req.params;
+
+      // Validate date format
+      if (!date || !/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+        ResponseUtil.badRequest(res, "Format tanggal tidak valid", [
+          "Format tanggal harus YYYY-MM-DD (contoh: 2025-09-15)",
+        ]);
+        return;
+      }
+
+      const bookings = await this.cwsService.getBookingsByDate(date);
+      ResponseUtil.success(
+        res,
+        bookings,
+        `Data booking CWS untuk tanggal ${date} berhasil diambil`
+      );
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  markPastBookingsAsDone = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      await this.cwsService.markPastBookingsAsDone();
+      ResponseUtil.success(
+        res,
+        null,
+        "Past bookings berhasil di-mark sebagai done"
       );
     } catch (error) {
       next(error);

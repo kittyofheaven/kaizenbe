@@ -1550,13 +1550,17 @@ POST /api/v1/cws
 ```
 
 **⚠️ CWS Special Requirements:**
+
 - **2-hour time slots only** (e.g., 14:00-16:00, 16:00-18:00)
 - **No 1-hour slots** - will be rejected with validation error
 - **Available slots**: 06:00-08:00, 08:00-10:00, 10:00-12:00, 12:00-14:00, 14:00-16:00, 16:00-18:00, 18:00-20:00, 20:00-22:00
+- **🚫 Thursday restriction** - CWS tidak bisa di book pada hari Kamis karena public only
 
 **Validasi:**
+
 - ✅ Waktu harus dalam slot 2 jam penuh (contoh: 14:00-16:00)
 - ✅ Waktu tidak boleh di masa lalu
+- ✅ **Hari Kamis tidak diperbolehkan** - "CWS tidak bisa di book pada hari Kamis karena public only"
 - ✅ Penanggung jawab harus exist di database
 - ✅ Ruang tidak boleh double booking
 
@@ -1578,6 +1582,108 @@ DELETE /api/v1/cws/{id}
 GET /api/v1/cws/penanggung-jawab/{penanggungJawabId}
 ```
 
+#### Get CWS Bookings by Date ⭐ **NEW**
+
+```http
+GET /api/v1/cws/date/{date}
+```
+
+**✨ Features:**
+
+- **Daily schedule view** - Get all bookings for a specific date
+- **Detailed information** - Includes responsible person details
+- **Ordered by time** - Bookings sorted by start time
+- **Perfect for calendar views** - Frontend can easily display daily schedule
+
+**Parameters:**
+
+- `date` (path, required): Date in YYYY-MM-DD format (e.g., "2025-09-15")
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": "3",
+      "idPenanggungJawab": "2",
+      "waktuMulai": "2025-09-15T03:00:00.000Z",
+      "waktuBerakhir": "2025-09-15T05:00:00.000Z",
+      "jumlahPengguna": "15",
+      "keterangan": "belajar",
+      "isDone": false,
+      "createdAt": "2025-09-15T01:41:37.000Z",
+      "updatedAt": "2025-09-15T01:41:37.000Z",
+      "penanggungJawab": {
+        "id": "2",
+        "namaLengkap": "Hazel",
+        "namaPanggilan": "Hazel",
+        "nomorWa": "+6285790826168"
+      }
+    },
+    {
+      "id": "4",
+      "idPenanggungJawab": "2",
+      "waktuMulai": "2025-09-15T05:00:00.000Z",
+      "waktuBerakhir": "2025-09-15T07:00:00.000Z",
+      "jumlahPengguna": "10",
+      "keterangan": "lala",
+      "isDone": false,
+      "createdAt": "2025-09-15T01:43:02.000Z",
+      "updatedAt": "2025-09-15T01:43:02.000Z",
+      "penanggungJawab": {
+        "id": "2",
+        "namaLengkap": "Hazel",
+        "namaPanggilan": "Hazel",
+        "nomorWa": "+6285790826168"
+      }
+    }
+  ],
+  "message": "Data booking CWS untuk tanggal 2025-09-15 berhasil diambil"
+}
+```
+
+**💡 Frontend Usage:**
+
+```javascript
+// Get CWS bookings for a specific date
+const getCWSBookingsByDate = async (date) => {
+  const response = await fetch(`/api/v1/cws/date/${date}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
+  const { data } = await response.json();
+
+  // Display daily schedule
+  const dailySchedule = data.map((booking) => ({
+    id: booking.id,
+    time: `${booking.waktuMulai} - ${booking.waktuBerakhir}`,
+    responsible: booking.penanggungJawab.namaLengkap,
+    users: booking.jumlahPengguna,
+    notes: booking.keterangan,
+    status: booking.isDone ? "Completed" : "Active",
+  }));
+
+  return dailySchedule;
+};
+
+// Usage
+const todayBookings = await getCWSBookingsByDate("2025-09-15");
+console.log("Today's CWS bookings:", todayBookings);
+```
+
+**Error Handling:**
+
+```json
+// Invalid date format
+{
+  "success": false,
+  "message": "Format tanggal tidak valid",
+  "errors": ["Format tanggal harus YYYY-MM-DD (contoh: 2025-09-15)"]
+}
+```
+
 #### Get CWS Time Slots ⭐ **SMART SLOTS**
 
 ```http
@@ -1585,10 +1691,12 @@ GET /api/v1/cws/time-slots?date=2024-01-15
 ```
 
 **✨ Features:**
+
 - **2-hour slots only** (berbeda dari endpoint lain yang 1 jam)
 - **Real-time availability** checking
 - **User-friendly display** format
 - **Smart conflict detection**
+- **🌏 WIB Timezone Display** - All times displayed in WIB (UTC+7)
 
 **Response:**
 
@@ -1613,29 +1721,112 @@ GET /api/v1/cws/time-slots?date=2024-01-15
 ```
 
 **💡 Frontend Usage:**
+
 ```javascript
 // Get available CWS time slots (2-hour only)
-const response = await fetch('/api/v1/cws/time-slots?date=2024-01-15', {
-  headers: { 'Authorization': `Bearer ${token}` }
+const response = await fetch("/api/v1/cws/time-slots?date=2024-01-15", {
+  headers: { Authorization: `Bearer ${token}` },
 });
 
 const { data } = await response.json();
 
 // Filter hanya slot yang tersedia (2-hour slots)
-const available2HourSlots = data.filter(slot => slot.available);
+const available2HourSlots = data.filter((slot) => slot.available);
 
 // Buat dropdown untuk 2-hour slots
-const cwsOptions = available2HourSlots.map(slot => ({
+const cwsOptions = available2HourSlots.map((slot) => ({
   value: slot.waktuMulai,
   label: slot.display, // "13.00 - 15.00"
-  duration: '2 hours'
+  duration: "2 hours",
 }));
+```
+
+#### Mark Past Bookings as Done ⭐ **NEW**
+
+```http
+POST /api/v1/cws/mark-past-done
+```
+
+**✨ Features:**
+
+- **Auto-cleanup** - Automatically mark past bookings as done
+- **Status management** - Updates `isDone` field for completed bookings
+- **Maintenance tool** - Useful for keeping booking status up-to-date
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "data": null,
+  "message": "Past bookings berhasil di-mark sebagai done"
+}
+```
+
+**💡 Frontend Usage:**
+
+```javascript
+// Mark past bookings as done (maintenance function)
+const markPastBookingsDone = async () => {
+  const response = await fetch("/api/v1/cws/mark-past-done", {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
+  const result = await response.json();
+
+  if (result.success) {
+    console.log("Past bookings marked as done");
+    // Refresh booking list to show updated status
+    await refreshBookingList();
+  }
+};
+
+// Usage - typically called periodically or on app startup
+await markPastBookingsDone();
 ```
 
 #### Other CWS Endpoints
 
 - `GET /api/v1/cws/{id}` - Get by ID
 - `GET /api/v1/cws/time-suggestions?date=2024-01-15` - Get time suggestions (without availability check)
+
+---
+
+## 🌏 **Timezone Handling**
+
+### **Backend Timezone Configuration**
+
+Semua endpoint booking menggunakan timezone handling yang konsisten:
+
+- **Storage**: Waktu disimpan dalam UTC di database (standar internasional)
+- **Display**: Waktu ditampilkan dalam WIB (UTC+7) untuk user Indonesia
+- **Conversion**: Otomatis menggunakan `timeZone: 'Asia/Jakarta'` untuk display
+
+### **Contoh Konversi Waktu**
+
+| UTC Time | WIB Time | Display |
+|----------|----------|---------|
+| 23:00 | 06:00 | "06.00 - 08.00" |
+| 00:00 | 07:00 | "07.00 - 09.00" |
+| 01:00 | 08:00 | "08.00 - 10.00" |
+| 13:00 | 20:00 | "20.00 - 22.00" |
+
+### **Frontend Integration**
+
+Frontend tidak perlu melakukan konversi timezone - backend sudah menyediakan:
+- `waktuMulai` dan `waktuBerakhir` dalam UTC (untuk perhitungan)
+- `display` dalam format WIB yang user-friendly (untuk tampilan)
+
+```javascript
+// Backend response sudah include display time dalam WIB
+{
+  "waktuMulai": "2025-09-14T23:00:00.000Z",  // UTC untuk perhitungan
+  "waktuBerakhir": "2025-09-15T01:00:00.000Z", // UTC untuk perhitungan
+  "display": "06.00 - 08.00", // WIB untuk tampilan
+  "available": true
+}
+```
 
 ---
 
@@ -1663,13 +1854,13 @@ Semua endpoint booking sekarang memiliki fitur **Smart Time Slots** yang otomati
 
 ### 📋 Supported Endpoints
 
-| Endpoint                             | Facility Filtering | Format        |
-| ------------------------------------ | ------------------ | ------------- |
-| `/api/v1/mesin-cuci-cewe/time-slots` | ✅ `facilityId`    | 1-hour slots  |
-| `/api/v1/mesin-cuci-cowo/time-slots` | ✅ `facilityId`    | 1-hour slots  |
-| `/api/v1/dapur/time-slots`           | ✅ `facilityId`    | 1-hour slots  |
-| `/api/v1/communal/available-slots`   | ✅ `lantai`        | 1-hour slots  |
-| `/api/v1/serbaguna/available-slots`  | ✅ `areaId`        | 1-hour slots  |
+| Endpoint                             | Facility Filtering | Format           |
+| ------------------------------------ | ------------------ | ---------------- |
+| `/api/v1/mesin-cuci-cewe/time-slots` | ✅ `facilityId`    | 1-hour slots     |
+| `/api/v1/mesin-cuci-cowo/time-slots` | ✅ `facilityId`    | 1-hour slots     |
+| `/api/v1/dapur/time-slots`           | ✅ `facilityId`    | 1-hour slots     |
+| `/api/v1/communal/available-slots`   | ✅ `lantai`        | 1-hour slots     |
+| `/api/v1/serbaguna/available-slots`  | ✅ `areaId`        | 1-hour slots     |
 | `/api/v1/cws/time-slots` ⭐          | ❌ No filtering    | **2-hour slots** |
 
 ### 💻 Frontend Integration Examples
@@ -1736,27 +1927,26 @@ const kompor2Available = await checkFacilityAvailability("2024-01-15", "2");
 ```javascript
 // Get CWS time slots (2-hour slots only)
 const getCWSTimeSlots = async (date) => {
-  const response = await fetch(
-    `/api/v1/cws/time-slots?date=${date}`,
-    { headers: { Authorization: `Bearer ${token}` } }
-  );
-  
+  const response = await fetch(`/api/v1/cws/time-slots?date=${date}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
   const { data } = await response.json();
-  
+
   // Filter available 2-hour slots
-  const available2HourSlots = data.filter(slot => slot.available);
-  
-  return available2HourSlots.map(slot => ({
+  const available2HourSlots = data.filter((slot) => slot.available);
+
+  return available2HourSlots.map((slot) => ({
     value: slot.waktuMulai,
     label: slot.display, // "13.00 - 15.00"
-    duration: '2 hours',
-    type: 'CWS'
+    duration: "2 hours",
+    type: "CWS",
   }));
 };
 
 // Usage - berbeda dari endpoint lain yang 1 jam
-const cwsSlots = await getCWSTimeSlots('2024-01-15');
-console.log('Available 2-hour CWS slots:', cwsSlots);
+const cwsSlots = await getCWSTimeSlots("2024-01-15");
+console.log("Available 2-hour CWS slots:", cwsSlots);
 ```
 
 #### 5. Real-time Availability Component
@@ -2770,10 +2960,12 @@ npm run dev
 ## 📋 **Complete Endpoint Summary**
 
 ### 🔐 **Authentication Endpoints**
+
 - `POST /api/v1/auth/login` - Login to get JWT token
 - ~~`POST /api/v1/auth/register`~~ - **TEMPORARILY DISABLED**
 
 ### 👥 **User Management**
+
 - `GET /api/v1/users` - Get all users
 - `GET /api/v1/users/{id}` - Get user by ID
 - `PUT /api/v1/users/{id}` - Update user
@@ -2784,6 +2976,7 @@ npm run dev
 ### 🏢 **Booking Endpoints**
 
 #### **Communal Room (1-hour slots)**
+
 - `GET /api/v1/communal` - Get all bookings
 - `POST /api/v1/communal` - Create booking
 - `GET /api/v1/communal/{id}` - Get by ID
@@ -2794,6 +2987,7 @@ npm run dev
 - `GET /api/v1/communal/available-slots/{date}/{lantai}` - ⭐ Smart time slots
 
 #### **Serbaguna Area (1-hour slots)**
+
 - `GET /api/v1/serbaguna` - Get all bookings
 - `POST /api/v1/serbaguna` - Create booking
 - `GET /api/v1/serbaguna/{id}` - Get by ID
@@ -2804,6 +2998,7 @@ npm run dev
 - `GET /api/v1/serbaguna/available-slots/{date}/{areaId}` - ⭐ Smart time slots
 
 #### **Kitchen/Dapur (1-hour slots)**
+
 - `GET /api/v1/dapur` - Get all bookings
 - `POST /api/v1/dapur` - Create booking
 - `GET /api/v1/dapur/{id}` - Get by ID
@@ -2813,6 +3008,7 @@ npm run dev
 - `GET /api/v1/dapur/time-slots?date=YYYY-MM-DD&facilityId=X` - ⭐ Smart time slots
 
 #### **Women's Washing Machine (1-hour slots)**
+
 - `GET /api/v1/mesin-cuci-cewe` - Get all bookings
 - `POST /api/v1/mesin-cuci-cewe` - Create booking
 - `GET /api/v1/mesin-cuci-cewe/{id}` - Get by ID
@@ -2822,6 +3018,7 @@ npm run dev
 - `GET /api/v1/mesin-cuci-cewe/time-slots?date=YYYY-MM-DD&facilityId=X` - ⭐ Smart time slots
 
 #### **Men's Washing Machine (1-hour slots)**
+
 - `GET /api/v1/mesin-cuci-cowo` - Get all bookings
 - `POST /api/v1/mesin-cuci-cowo` - Create booking
 - `GET /api/v1/mesin-cuci-cowo/{id}` - Get by ID
@@ -2831,22 +3028,26 @@ npm run dev
 - `GET /api/v1/mesin-cuci-cowo/time-slots?date=YYYY-MM-DD&facilityId=X` - ⭐ Smart time slots
 
 #### **CWS - Community Work Space (2-hour slots)** ⭐ **NEW**
+
 - `GET /api/v1/cws` - Get all bookings
 - `POST /api/v1/cws` - Create booking
 - `GET /api/v1/cws/{id}` - Get by ID
 - `PUT /api/v1/cws/{id}` - Update booking
 - `DELETE /api/v1/cws/{id}` - Delete booking
 - `GET /api/v1/cws/penanggung-jawab/{id}` - Get by responsible person
+- `GET /api/v1/cws/date/{date}` - ⭐ **Get bookings by date** (NEW)
+- `POST /api/v1/cws/mark-past-done` - ⭐ **Mark past bookings as done** (NEW)
 - `GET /api/v1/cws/time-slots?date=YYYY-MM-DD` - ⭐ Smart time slots (2-hour)
+- `GET /api/v1/cws/time-suggestions?date=YYYY-MM-DD` - Basic time suggestions (2-hour)
 
 ### 🔑 **Key Differences**
 
-| Feature | Most Endpoints | CWS |
-|---------|---------------|-----|
-| **Time Slots** | 1-hour slots | **2-hour slots** |
-| **Available Hours** | 06:00-22:00 (16 slots) | 06:00-22:00 (8 slots) |
-| **Facility Filtering** | ✅ Supported | ❌ No filtering |
-| **Smart Availability** | ✅ Available | ✅ Available |
+| Feature                | Most Endpoints         | CWS                   |
+| ---------------------- | ---------------------- | --------------------- |
+| **Time Slots**         | 1-hour slots           | **2-hour slots**      |
+| **Available Hours**    | 06:00-22:00 (16 slots) | 06:00-22:00 (8 slots) |
+| **Facility Filtering** | ✅ Supported           | ❌ No filtering       |
+| **Smart Availability** | ✅ Available           | ✅ Available          |
 
 ### 🚀 **Quick Access**
 

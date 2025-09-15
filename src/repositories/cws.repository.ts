@@ -2,6 +2,15 @@ import { CWS, Prisma } from "@prisma/client";
 import { BaseRepository } from "./base.repository";
 import { PaginationParams, TimeRangeFilter } from "../types";
 
+export type CWSWithRelations = CWS & {
+  penanggungJawab: {
+    id: bigint;
+    namaLengkap: string;
+    namaPanggilan: string;
+    nomorWa: string | null;
+  };
+};
+
 export class CWSRepository extends BaseRepository<
   CWS,
   Prisma.CWSCreateInput,
@@ -142,6 +151,33 @@ export class CWSRepository extends BaseRepository<
             },
           },
         ],
+      },
+    });
+  }
+
+  async findByDateRange(
+    startDate: Date,
+    endDate: Date
+  ): Promise<CWSWithRelations[]> {
+    return this.db.cWS.findMany({
+      where: {
+        waktuMulai: {
+          gte: startDate,
+          lt: endDate,
+        },
+      },
+      include: {
+        penanggungJawab: {
+          select: {
+            id: true,
+            namaLengkap: true,
+            namaPanggilan: true,
+            nomorWa: true,
+          },
+        },
+      },
+      orderBy: {
+        waktuMulai: "asc",
       },
     });
   }
