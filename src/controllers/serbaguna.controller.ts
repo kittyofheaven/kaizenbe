@@ -187,7 +187,7 @@ export class SerbagunaController extends BaseController<
         return;
       }
 
-      const slots = TimeValidationUtil.getOneHourTimeSlots(date);
+      const slots = TimeValidationUtil.getTwoHourTimeSlots(date);
       const formattedSlots = slots.map((slot) => ({
         waktuMulai: slot.waktuMulai.toISOString(),
         waktuBerakhir: slot.waktuBerakhir.toISOString(),

@@ -1171,7 +1171,7 @@ const dropdownOptions = availableSlots.map((slot) => ({
 
 ---
 
-### Serbaguna Area Booking
+### Serbaguna Area Booking ⭐ **UPDATED - 2-HOUR SLOTS**
 
 #### Get All Serbaguna Bookings
 
@@ -1192,12 +1192,21 @@ POST /api/v1/serbaguna
   "idPenanggungJawab": "1",
   "idArea": "1",
   "waktuMulai": "2024-01-15T13:00:00.000Z",
-  "waktuBerakhir": "2024-01-15T14:00:00.000Z",
+  "waktuBerakhir": "2024-01-15T15:00:00.000Z",
   "jumlahPengguna": "8",
   "keterangan": "Diskusi kelompok proyek",
   "isDone": false
 }
 ```
+
+**✨ Features:**
+
+- **2-hour slots only** (berbeda dari endpoint lain yang 1 jam)
+- **Area-specific booking** - Pilih area yang tersedia
+- **Real-time availability** checking per area
+- **User-friendly display** format
+- **Smart conflict detection**
+- **🌏 WIB Timezone Display** - All times displayed in WIB (UTC+7)
 
 #### Get Available Areas
 
@@ -1229,10 +1238,63 @@ GET /api/v1/serbaguna/areas
 GET /api/v1/serbaguna/area/{areaId}
 ```
 
-#### Get Available Time Slots for Area
+#### Get Available Time Slots for Area ⭐ **Smart Time Slots**
 
 ```http
-GET /api/v1/serbaguna/available-slots/{date}/{areaId}
+GET /api/v1/serbaguna/time-slots?date=2024-01-15&areaId=1
+```
+
+**✨ Features:**
+
+- **2-hour slots only** (berbeda dari endpoint lain yang 1 jam)
+- **Area-specific filtering** - Hanya tampilkan slot untuk area tertentu
+- **Real-time availability** checking
+- **User-friendly display** format
+- **Smart conflict detection**
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "waktuMulai": "2024-01-14T23:00:00.000Z",
+      "waktuBerakhir": "2024-01-15T01:00:00.000Z",
+      "display": "06.00 - 08.00",
+      "available": true
+    },
+    {
+      "waktuMulai": "2024-01-15T01:00:00.000Z",
+      "waktuBerakhir": "2024-01-15T03:00:00.000Z",
+      "display": "08.00 - 10.00",
+      "available": false
+    }
+  ],
+  "message": "Saran slot waktu berhasil diambil"
+}
+```
+
+**💡 Frontend Usage:**
+
+```javascript
+// Get available 2-hour slots for specific area
+const getSerbagunaTimeSlots = async (date, areaId) => {
+  const response = await fetch(`/api/v1/serbaguna/time-slots?date=${date}&areaId=${areaId}`, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  
+  const result = await response.json();
+  
+  if (result.success) {
+    // Display available slots
+    result.data.forEach(slot => {
+      if (slot.available) {
+        console.log(`Available: ${slot.display}`);
+      }
+    });
+  }
+};
 ```
 
 #### Other Endpoints
@@ -1805,16 +1867,17 @@ Semua endpoint booking menggunakan timezone handling yang konsisten:
 
 ### **Contoh Konversi Waktu**
 
-| UTC Time | WIB Time | Display |
-|----------|----------|---------|
-| 23:00 | 06:00 | "06.00 - 08.00" |
-| 00:00 | 07:00 | "07.00 - 09.00" |
-| 01:00 | 08:00 | "08.00 - 10.00" |
-| 13:00 | 20:00 | "20.00 - 22.00" |
+| UTC Time | WIB Time | Display         |
+| -------- | -------- | --------------- |
+| 23:00    | 06:00    | "06.00 - 08.00" |
+| 00:00    | 07:00    | "07.00 - 09.00" |
+| 01:00    | 08:00    | "08.00 - 10.00" |
+| 13:00    | 20:00    | "20.00 - 22.00" |
 
 ### **Frontend Integration**
 
 Frontend tidak perlu melakukan konversi timezone - backend sudah menyediakan:
+
 - `waktuMulai` dan `waktuBerakhir` dalam UTC (untuk perhitungan)
 - `display` dalam format WIB yang user-friendly (untuk tampilan)
 
@@ -1860,7 +1923,7 @@ Semua endpoint booking sekarang memiliki fitur **Smart Time Slots** yang otomati
 | `/api/v1/mesin-cuci-cowo/time-slots` | ✅ `facilityId`    | 1-hour slots     |
 | `/api/v1/dapur/time-slots`           | ✅ `facilityId`    | 1-hour slots     |
 | `/api/v1/communal/available-slots`   | ✅ `lantai`        | 1-hour slots     |
-| `/api/v1/serbaguna/available-slots`  | ✅ `areaId`        | 1-hour slots     |
+| `/api/v1/serbaguna/time-slots`       | ✅ `areaId`        | **2-hour slots** |
 | `/api/v1/cws/time-slots` ⭐          | ❌ No filtering    | **2-hour slots** |
 
 ### 💻 Frontend Integration Examples
@@ -2986,7 +3049,7 @@ npm run dev
 - `GET /api/v1/communal/lantai/{lantai}` - Get by floor
 - `GET /api/v1/communal/available-slots/{date}/{lantai}` - ⭐ Smart time slots
 
-#### **Serbaguna Area (1-hour slots)**
+#### **Serbaguna Area (2-hour slots) ⭐ UPDATED**
 
 - `GET /api/v1/serbaguna` - Get all bookings
 - `POST /api/v1/serbaguna` - Create booking
@@ -2995,7 +3058,7 @@ npm run dev
 - `DELETE /api/v1/serbaguna/{id}` - Delete booking
 - `GET /api/v1/serbaguna/areas` - Get available areas
 - `GET /api/v1/serbaguna/area/{areaId}` - Get by area
-- `GET /api/v1/serbaguna/available-slots/{date}/{areaId}` - ⭐ Smart time slots
+- `GET /api/v1/serbaguna/time-slots?date={date}&areaId={areaId}` - ⭐ Smart 2-hour time slots
 
 #### **Kitchen/Dapur (1-hour slots)**
 

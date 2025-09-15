@@ -41,15 +41,15 @@ export class SerbagunaService extends BaseService<
   }
 
   async create(data: CreateSerbagunaDTO): Promise<Serbaguna> {
-    // Validate time slots (1 hour)
+    // Validate time slots (2 hours)
     if (
-      !TimeValidationUtil.validateOneHourSlot(
+      !TimeValidationUtil.validateTwoHourSlot(
         data.waktuMulai,
         data.waktuBerakhir
       )
     ) {
       throw new Error(
-        "Waktu booking harus dalam slot 1 jam penuh (contoh: 13:00-14:00)"
+        "Waktu booking harus dalam slot 2 jam penuh (contoh: 13:00-15:00)"
       );
     }
 
@@ -162,7 +162,7 @@ export class SerbagunaService extends BaseService<
     date: Date,
     areaId: bigint
   ): Promise<{ waktuMulai: Date; waktuBerakhir: Date; display: string; available: boolean }[]> {
-    const allSlots = TimeValidationUtil.getOneHourTimeSlots(date);
+    const allSlots = TimeValidationUtil.getTwoHourTimeSlots(date);
     const bookedSlots = await this.serbagunaRepository.findByTimeRange({
       waktuMulai: {
         gte: new Date(
