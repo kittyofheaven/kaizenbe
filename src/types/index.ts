@@ -42,6 +42,7 @@ export interface IRepository<T, CreateInput, UpdateInput> {
   create(data: CreateInput): Promise<T>;
   update(id: bigint, data: UpdateInput): Promise<T>;
   delete(id: bigint): Promise<void>;
+  count(params?: PaginationParams): Promise<number>;
 }
 
 // Generic service interface

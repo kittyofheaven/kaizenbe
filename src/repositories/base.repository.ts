@@ -19,6 +19,16 @@ export abstract class BaseRepository<T, CreateInput, UpdateInput>
   abstract update(id: bigint, data: UpdateInput): Promise<T>;
   abstract delete(id: bigint): Promise<void>;
 
+  async count(_params?: PaginationParams): Promise<number> {
+    const delegate = (this.db as any)[this.modelName];
+
+    if (!delegate?.count) {
+      throw new Error(`Count method not available for model ${this.modelName}`);
+    }
+
+    return delegate.count();
+  }
+
   // Helper method for pagination
   protected getPaginationParams(params?: PaginationParams) {
     const page = params?.page || 1;

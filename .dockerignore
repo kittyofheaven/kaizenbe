@@ -1,0 +1,12 @@
+.dockerignore
+Dockerfile
+node_modules
+dist
+npm-debug.log
+*\.env
+*.tsbuildinfo
+.git
+.gitignore
+.DS_Store
+coverage
+tmp

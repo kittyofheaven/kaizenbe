@@ -96,12 +96,15 @@ export class CWSService extends BaseService<
       throw new Error("Resource not found");
     }
 
-    // Validate time slots if time is being updated
-    if (data.waktuMulai && data.waktuBerakhir) {
+    const newWaktuMulai = data.waktuMulai ?? existing.waktuMulai;
+    const newWaktuBerakhir = data.waktuBerakhir ?? existing.waktuBerakhir;
+
+    // Validate time slots if either boundary is being updated
+    if (data.waktuMulai !== undefined || data.waktuBerakhir !== undefined) {
       if (
         !TimeValidationUtil.validateTwoHourSlot(
-          data.waktuMulai,
-          data.waktuBerakhir
+          newWaktuMulai,
+          newWaktuBerakhir
         )
       ) {
         throw new Error(
@@ -109,14 +112,21 @@ export class CWSService extends BaseService<
         );
       }
 
-      if (!TimeValidationUtil.validateFutureTime(data.waktuMulai)) {
+      if (!TimeValidationUtil.validateFutureTime(newWaktuMulai)) {
         throw new Error("Waktu booking tidak boleh di masa lalu");
+      }
+
+      const bookingDate = new Date(newWaktuMulai);
+      if (bookingDate.getDay() === 4) {
+        throw new Error(
+          "CWS tidak bisa di book pada hari Kamis karena public only"
+        );
       }
 
       // Check for time conflicts
       const conflicts = await this.cwsRepository.checkTimeConflict(
-        data.waktuMulai,
-        data.waktuBerakhir,
+        newWaktuMulai,
+        newWaktuBerakhir,
         id
       );
       if (conflicts.length > 0) {
@@ -125,7 +135,7 @@ export class CWSService extends BaseService<
     }
 
     // Validate foreign key if being updated
-    if (data.idPenanggungJawab) {
+    if (data.idPenanggungJawab !== undefined) {
       const userExists = await prisma.users.findUnique({
         where: { id: data.idPenanggungJawab },
       });

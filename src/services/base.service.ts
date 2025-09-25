@@ -16,16 +16,22 @@ export abstract class BaseService<
   }
 
   async getAll(params?: PaginationParams): Promise<PaginatedResponse<T>> {
-    const data = await this.repository.findMany(params);
-    // This is a simplified pagination - in real implementation,
-    // you'd want to get the total count as well
+    const [data, total] = await Promise.all([
+      this.repository.findMany(params),
+      this.repository.count(params),
+    ]);
+
+    const limit = params?.limit || 10;
+    const currentPage = params?.page || 1;
+    const totalPages = Math.max(1, Math.ceil(total / limit));
+
     return {
       data,
       pagination: {
-        page: params?.page || 1,
-        limit: params?.limit || 10,
-        total: data.length, // This should be actual total from DB
-        totalPages: Math.ceil(data.length / (params?.limit || 10)),
+        page: currentPage,
+        limit,
+        total,
+        totalPages,
       },
     };
   }

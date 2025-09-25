@@ -23,6 +23,7 @@
 - [💡 Contoh Penggunaan](#-contoh-penggunaan)
 - [🔧 Tips untuk Frontend Developer](#-tips-untuk-frontend-developer)
 - [🛠️ Troubleshooting](#️-troubleshooting)
+- [🐳 Docker Setup](#-docker-setup)
 
 ---
 
@@ -153,6 +154,61 @@ curl -X POST http://localhost:3000/api/v1/auth/login \
 # Test protected endpoint (replace TOKEN with actual token)
 curl -H "Authorization: Bearer YOUR_TOKEN" \
   http://localhost:3000/api/v1/users
+```
+
+---
+
+## 🐳 Docker Setup
+
+### 1. Build Image (Arch Linux & other distros)
+
+```bash
+docker build -t kaizen-api .
+```
+
+- Gunakan `--platform linux/amd64` bila diperlukan (misal build di Apple Silicon untuk server x86_64 Arch).
+
+### 2. Jalankan Container
+
+```bash
+docker run --rm \
+  -p 3000:3000 \
+  -e DATABASE_URL="mysql://user:password@host:3306/database" \
+  kaizen-api
+```
+
+- `DATABASE_URL` wajib diisi agar Prisma dapat terhubung ke database.
+- Tambahkan environment lain (`JWT_SECRET`, `JWT_EXPIRES_IN`, dsb.) dengan `-e` sesuai kebutuhan.
+- Untuk development lokal, koneksikan ke database di host dengan `host.docker.internal` (Docker Desktop) atau `--network host` (pada Arch Linux dengan Docker default).
+
+### 3. Docker Compose (opsional)
+
+Buat file `docker-compose.yml` sederhana jika ingin menyatukan aplikasi dan database:
+
+```yaml
+services:
+  api:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: mysql://user:password@mysql:3306/database
+      JWT_SECRET: super-secret
+    depends_on:
+      - mysql
+  mysql:
+    image: mysql:8
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: database
+    ports:
+      - "3306:3306"
+```
+
+Jalankan dengan:
+
+```bash
+docker compose up --build
 ```
 
 ---
@@ -612,6 +668,8 @@ const message = result?.message || "Unknown error";
 GET /api/v1/users?page=2&limit=20&sortBy=namaLengkap&sortOrder=asc
 ```
 
+> ℹ️ Mulai versi ini, field `pagination.total` dan `pagination.totalPages` mencerminkan total data sesungguhnya di database, bukan hanya jumlah item pada halaman aktif.
+
 ---
 
 ## 🔗 Endpoints
@@ -1070,6 +1128,8 @@ POST /api/v1/communal
 PUT /api/v1/communal/{id}
 ```
 
+**Catatan:** Perubahan salah satu dari `waktuMulai` atau `waktuBerakhir` tetap melewati validasi slot 1 jam, pengecekan waktu masa depan, dan deteksi bentrok pada lantai terkait.
+
 #### Delete Communal Booking
 
 ```http
@@ -1304,6 +1364,8 @@ const getSerbagunaTimeSlots = async (date, areaId) => {
 - `GET /api/v1/serbaguna/{id}` - Get by ID
 - `GET /api/v1/serbaguna/penanggung-jawab/{penanggungJawabId}` - Get by responsible person
 - `GET /api/v1/serbaguna/time-slots?date=2024-01-15` - Get time slot suggestions
+
+> ℹ️ **Update:** endpoint `PUT /api/v1/serbaguna/{id}` kini memverifikasi durasi 2 jam penuh dan mengecek konflik waktu bahkan saat hanya `waktuMulai` atau `waktuBerakhir` yang berubah.
 
 ---
 
@@ -1631,6 +1693,8 @@ POST /api/v1/cws
 ```http
 PUT /api/v1/cws/{id}
 ```
+
+**Catatan:** Perubahan parsial akan tetap divalidasi—slot wajib 2 jam penuh, waktu tidak boleh lampau, Kamis tetap diblokir, dan konflik jadwal dicek sebelum disimpan.
 
 #### Delete CWS Booking
 

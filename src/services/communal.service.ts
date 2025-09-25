@@ -89,12 +89,15 @@ export class CommunalService extends BaseService<
       throw new Error("Resource not found");
     }
 
-    // Validate time slots if time is being updated
-    if (data.waktuMulai && data.waktuBerakhir) {
+    const newWaktuMulai = data.waktuMulai ?? existing.waktuMulai;
+    const newWaktuBerakhir = data.waktuBerakhir ?? existing.waktuBerakhir;
+
+    // Validate time slots if either time boundary is being updated
+    if (data.waktuMulai !== undefined || data.waktuBerakhir !== undefined) {
       if (
         !TimeValidationUtil.validateOneHourSlot(
-          data.waktuMulai,
-          data.waktuBerakhir
+          newWaktuMulai,
+          newWaktuBerakhir
         )
       ) {
         throw new Error(
@@ -102,28 +105,27 @@ export class CommunalService extends BaseService<
         );
       }
 
-      if (!TimeValidationUtil.validateFutureTime(data.waktuMulai)) {
+      if (!TimeValidationUtil.validateFutureTime(newWaktuMulai)) {
         throw new Error("Waktu booking tidak boleh di masa lalu");
       }
 
       // Check for time conflicts
+      const targetLantai = data.lantai ?? existing.lantai;
       const conflicts = await this.communalRepository.checkTimeConflict(
-        data.waktuMulai,
-        data.waktuBerakhir,
-        data.lantai || existing.lantai,
+        newWaktuMulai,
+        newWaktuBerakhir,
+        targetLantai,
         id
       );
       if (conflicts.length > 0) {
         throw new Error(
-          `Ruang communal lantai ${
-            data.lantai || existing.lantai
-          } sudah dibooking pada waktu tersebut`
+          `Ruang communal lantai ${targetLantai} sudah dibooking pada waktu tersebut`
         );
       }
     }
 
     // Validate foreign key if being updated
-    if (data.idPenanggungJawab) {
+    if (data.idPenanggungJawab !== undefined) {
       const userExists = await prisma.users.findUnique({
         where: { id: data.idPenanggungJawab },
       });

@@ -95,28 +95,31 @@ export class SerbagunaService extends BaseService<
       throw new Error("Resource not found");
     }
 
-    // Validate time slots if time is being updated
-    if (data.waktuMulai && data.waktuBerakhir) {
+    const newWaktuMulai = data.waktuMulai ?? existing.waktuMulai;
+    const newWaktuBerakhir = data.waktuBerakhir ?? existing.waktuBerakhir;
+
+    // Validate time slots if either boundary is being updated
+    if (data.waktuMulai !== undefined || data.waktuBerakhir !== undefined) {
       if (
-        !TimeValidationUtil.validateOneHourSlot(
-          data.waktuMulai,
-          data.waktuBerakhir
+        !TimeValidationUtil.validateTwoHourSlot(
+          newWaktuMulai,
+          newWaktuBerakhir
         )
       ) {
         throw new Error(
-          "Waktu booking harus dalam slot 1 jam penuh (contoh: 13:00-14:00)"
+          "Waktu booking harus dalam slot 2 jam penuh (contoh: 13:00-15:00)"
         );
       }
 
-      if (!TimeValidationUtil.validateFutureTime(data.waktuMulai)) {
+      if (!TimeValidationUtil.validateFutureTime(newWaktuMulai)) {
         throw new Error("Waktu booking tidak boleh di masa lalu");
       }
 
-      // Check for time conflicts
+      const targetArea = data.idArea ?? existing.idArea;
       const conflicts = await this.serbagunaRepository.checkTimeConflict(
-        data.waktuMulai,
-        data.waktuBerakhir,
-        data.idArea || existing.idArea,
+        newWaktuMulai,
+        newWaktuBerakhir,
+        targetArea,
         id
       );
       if (conflicts.length > 0) {
@@ -125,7 +128,7 @@ export class SerbagunaService extends BaseService<
     }
 
     // Validate foreign keys if being updated
-    if (data.idPenanggungJawab) {
+    if (data.idPenanggungJawab !== undefined) {
       const userExists = await prisma.users.findUnique({
         where: { id: data.idPenanggungJawab },
       });
@@ -134,7 +137,7 @@ export class SerbagunaService extends BaseService<
       }
     }
 
-    if (data.idArea) {
+    if (data.idArea !== undefined) {
       const areaExists = await prisma.areaSerbaguna.findUnique({
         where: { id: data.idArea },
       });
