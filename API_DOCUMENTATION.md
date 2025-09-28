@@ -19,6 +19,7 @@
   - [Kitchen Booking](#kitchen-booking)
   - [Women's Washing Machine Booking](#womens-washing-machine-booking)
   - [Men's Washing Machine Booking](#mens-washing-machine-booking)
+  - [Theater Booking](#theater-1-hour-slots--new)
 - [⏰ Validasi Waktu](#-validasi-waktu)
 - [💡 Contoh Penggunaan](#-contoh-penggunaan)
 - [🔧 Tips untuk Frontend Developer](#-tips-untuk-frontend-developer)
@@ -3153,6 +3154,44 @@ npm run dev
 - `DELETE /api/v1/mesin-cuci-cowo/{id}` - Delete booking
 - `GET /api/v1/mesin-cuci-cowo/facilities` - Get available facilities
 - `GET /api/v1/mesin-cuci-cowo/time-slots?date=YYYY-MM-DD&facilityId=X` - ⭐ Smart time slots
+
+#### **Theater (1-hour slots)** ⭐ **NEW**
+
+- `GET /api/v1/theater` - Get all bookings
+- `POST /api/v1/theater` - Create booking
+- `GET /api/v1/theater/{id}` - Get by ID
+- `PUT /api/v1/theater/{id}` - Update booking
+- `DELETE /api/v1/theater/{id}` - Delete booking
+- `GET /api/v1/theater/penanggung-jawab/{id}` - Get by responsible person
+- `GET /api/v1/theater/time-slots?date=YYYY-MM-DD` - ⭐ Slot availability with status
+- `GET /api/v1/theater/time-suggestions?date=YYYY-MM-DD` - Quick slot suggestions
+
+> Theater follows the same 1-hour validation rules as Communal (06:00-22:00 WIB).
+
+**Sample Create**
+
+```http
+POST /api/v1/theater
+Authorization: Bearer <TOKEN>
+Content-Type: application/json
+
+{
+  "idPenanggungJawab": "2",
+  "waktuMulai": "2025-10-15T09:00:00.000Z",
+  "waktuBerakhir": "2025-10-15T10:00:00.000Z",
+  "jumlahPengguna": "20",
+  "keterangan": "Gladi bersih"
+}
+```
+
+**Slot Availability**
+
+```http
+GET /api/v1/theater/time-slots?date=2025-10-15
+Authorization: Bearer <TOKEN>
+```
+
+Response payload contains `display` (WIB format) and `available` flags for each hour.
 
 #### **CWS - Community Work Space (2-hour slots)** ⭐ **NEW**
 

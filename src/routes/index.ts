@@ -7,9 +7,8 @@ import mesinCuciCeweRoutes from "./mesin-cuci-cewe.routes";
 import mesinCuciCowoRoutes from "./mesin-cuci-cowo.routes";
 import dapurRoutes from "./dapur.routes";
 import cwsRoutes from "./cws.routes";
+import theaterRoutes from "./theater.routes";
 import { AuthMiddleware } from "../middleware/auth.middleware";
-// Import other routes here
-// import theaterRoutes from './theater.routes';
 
 const router = Router();
 
@@ -43,7 +42,7 @@ router.use(
 );
 router.use(`${API_VERSION}/dapur`, AuthMiddleware.authenticate, dapurRoutes);
 router.use(`${API_VERSION}/cws`, AuthMiddleware.authenticate, cwsRoutes);
-// router.use(`${API_VERSION}/theater`, AuthMiddleware.authenticate, theaterRoutes);
+router.use(`${API_VERSION}/theater`, AuthMiddleware.authenticate, theaterRoutes);
 
 // Health check
 router.get("/health", (req, res) => {
@@ -71,8 +70,8 @@ router.get(`${API_VERSION}`, (req, res) => {
       mesinCuciCowo: `${API_VERSION}/mesin-cuci-cowo`,
       dapur: `${API_VERSION}/dapur`,
       cws: `${API_VERSION}/cws`,
+      theater: `${API_VERSION}/theater`,
       // Add other endpoints here
-      // theater: `${API_VERSION}/theater`,
     },
     authentication: {
       required: "All endpoints except /auth require JWT token",
