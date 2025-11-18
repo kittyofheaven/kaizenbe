@@ -149,6 +149,8 @@ const authController = new AuthController();
  */
 router.post("/login", authController.login);
 
+router.post("/n8n-login", authController.n8nLogin);
+
 // TEMPORARILY DISABLED - Registration endpoint
 // Uncomment the lines below to enable registration
 /*

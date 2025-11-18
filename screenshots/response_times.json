@@ -1,0 +1,467 @@
+[
+  {
+    "name": "Auth Login",
+    "method": "POST",
+    "path": "/api/v1/auth/login",
+    "status_code": 200,
+    "elapsed_ms": 412.42,
+    "message": "Login berhasil"
+  },
+  {
+    "name": "Health Check",
+    "method": "GET",
+    "path": "/health",
+    "status_code": 200,
+    "elapsed_ms": 2.11,
+    "message": "API is healthy"
+  },
+  {
+    "name": "API Info",
+    "method": "GET",
+    "path": "/api/v1",
+    "status_code": 200,
+    "elapsed_ms": 1.32,
+    "message": "Kaizen API v1"
+  },
+  {
+    "name": "Profile",
+    "method": "GET",
+    "path": "/api/v1/auth/profile",
+    "status_code": 200,
+    "elapsed_ms": 6.03,
+    "message": "Profile berhasil diambil"
+  },
+  {
+    "name": "Users List",
+    "method": "GET",
+    "path": "/api/v1/users",
+    "status_code": 200,
+    "elapsed_ms": 4.0,
+    "message": "Data retrieved successfully"
+  },
+  {
+    "name": "User Detail",
+    "method": "GET",
+    "path": "/api/v1/users/1",
+    "status_code": 200,
+    "elapsed_ms": 2.72,
+    "message": "Data retrieved successfully"
+  },
+  {
+    "name": "Users By Angkatan",
+    "method": "GET",
+    "path": "/api/v1/users/angkatan/1",
+    "status_code": 200,
+    "elapsed_ms": 9.07,
+    "message": "Users retrieved successfully"
+  },
+  {
+    "name": "User By WhatsApp",
+    "method": "GET",
+    "path": "/api/v1/users/wa/%2B6281234567890",
+    "status_code": 200,
+    "elapsed_ms": 6.27,
+    "message": "User retrieved successfully"
+  },
+  {
+    "name": "Communal List",
+    "method": "GET",
+    "path": "/api/v1/communal",
+    "status_code": 200,
+    "elapsed_ms": 18.81,
+    "message": "Data retrieved successfully"
+  },
+  {
+    "name": "Communal Detail",
+    "method": "GET",
+    "path": "/api/v1/communal/1",
+    "status_code": 404,
+    "elapsed_ms": 5.75,
+    "message": "Resource not found",
+    "note": "Fallback ID used"
+  },
+  {
+    "name": "Communal By Penanggung Jawab",
+    "method": "GET",
+    "path": "/api/v1/communal/penanggung-jawab/1",
+    "status_code": 200,
+    "elapsed_ms": 3.44,
+    "message": "Data communal berhasil diambil"
+  },
+  {
+    "name": "Communal By Lantai",
+    "method": "GET",
+    "path": "/api/v1/communal/lantai/1",
+    "status_code": 200,
+    "elapsed_ms": 2.26,
+    "message": "Data communal berhasil diambil"
+  },
+  {
+    "name": "Communal Available Slots",
+    "method": "GET",
+    "path": "/api/v1/communal/available-slots/2025-09-20/1",
+    "status_code": 200,
+    "elapsed_ms": 29.31,
+    "message": "Slot waktu tersedia berhasil diambil"
+  },
+  {
+    "name": "Communal Time Slots",
+    "method": "GET",
+    "path": "/api/v1/communal/time-slots",
+    "status_code": 200,
+    "elapsed_ms": 3.13,
+    "message": "Saran slot waktu berhasil diambil"
+  },
+  {
+    "name": "Serbaguna List",
+    "method": "GET",
+    "path": "/api/v1/serbaguna",
+    "status_code": 200,
+    "elapsed_ms": 9.73,
+    "message": "Data retrieved successfully"
+  },
+  {
+    "name": "Serbaguna Detail",
+    "method": "GET",
+    "path": "/api/v1/serbaguna/1",
+    "status_code": 200,
+    "elapsed_ms": 2.2,
+    "message": "Success"
+  },
+  {
+    "name": "Serbaguna By Penanggung Jawab",
+    "method": "GET",
+    "path": "/api/v1/serbaguna/penanggung-jawab/2",
+    "status_code": 200,
+    "elapsed_ms": 2.92,
+    "message": "Data serbaguna berhasil diambil"
+  },
+  {
+    "name": "Serbaguna By Area",
+    "method": "GET",
+    "path": "/api/v1/serbaguna/area/1",
+    "status_code": 200,
+    "elapsed_ms": 4.13,
+    "message": "Data serbaguna berhasil diambil"
+  },
+  {
+    "name": "Serbaguna Areas",
+    "method": "GET",
+    "path": "/api/v1/serbaguna/areas",
+    "status_code": 200,
+    "elapsed_ms": 1.99,
+    "message": "Data area serbaguna berhasil diambil"
+  },
+  {
+    "name": "Serbaguna Time Slots",
+    "method": "GET",
+    "path": "/api/v1/serbaguna/time-slots",
+    "status_code": 200,
+    "elapsed_ms": 1.89,
+    "message": "Saran slot waktu berhasil diambil"
+  },
+  {
+    "name": "Serbaguna Available Slots",
+    "method": "GET",
+    "path": "/api/v1/serbaguna/available-slots/2025-09-20/1",
+    "status_code": 200,
+    "elapsed_ms": 3.41,
+    "message": "Slot waktu tersedia berhasil diambil"
+  },
+  {
+    "name": "Dapur List",
+    "method": "GET",
+    "path": "/api/v1/dapur",
+    "status_code": 200,
+    "elapsed_ms": 3.24,
+    "message": "Data retrieved successfully"
+  },
+  {
+    "name": "Dapur Detail",
+    "method": "GET",
+    "path": "/api/v1/dapur/1",
+    "status_code": 200,
+    "elapsed_ms": 2.68,
+    "message": "Success"
+  },
+  {
+    "name": "Dapur By Peminjam",
+    "method": "GET",
+    "path": "/api/v1/dapur/peminjam/2",
+    "status_code": 200,
+    "elapsed_ms": 2.73,
+    "message": "Data booking berdasarkan peminjam berhasil diambil"
+  },
+  {
+    "name": "Dapur By Fasilitas",
+    "method": "GET",
+    "path": "/api/v1/dapur/fasilitas/2",
+    "status_code": 200,
+    "elapsed_ms": 3.46,
+    "message": "Data booking berdasarkan fasilitas berhasil diambil"
+  },
+  {
+    "name": "Dapur Facilities",
+    "method": "GET",
+    "path": "/api/v1/dapur/facilities",
+    "status_code": 200,
+    "elapsed_ms": 1.96,
+    "message": "Data fasilitas dapur berhasil diambil"
+  },
+  {
+    "name": "Dapur By Time Range",
+    "method": "GET",
+    "path": "/api/v1/dapur/time-range",
+    "status_code": 500,
+    "elapsed_ms": 2.63,
+    "message": "Internal server error"
+  },
+  {
+    "name": "Dapur Time Slots",
+    "method": "GET",
+    "path": "/api/v1/dapur/time-slots",
+    "status_code": 200,
+    "elapsed_ms": 4.7,
+    "message": "Saran slot waktu berhasil diambil"
+  },
+  {
+    "name": "Mesin Cuci Cewe List",
+    "method": "GET",
+    "path": "/api/v1/mesin-cuci-cewe",
+    "status_code": 200,
+    "elapsed_ms": 3.82,
+    "message": "Data retrieved successfully"
+  },
+  {
+    "name": "Mesin Cuci Cewe Detail",
+    "method": "GET",
+    "path": "/api/v1/mesin-cuci-cewe/3",
+    "status_code": 200,
+    "elapsed_ms": 2.78,
+    "message": "Success"
+  },
+  {
+    "name": "Mesin Cuci Cewe By Peminjam",
+    "method": "GET",
+    "path": "/api/v1/mesin-cuci-cewe/peminjam/2",
+    "status_code": 200,
+    "elapsed_ms": 7.97,
+    "message": "Data booking berdasarkan peminjam berhasil diambil"
+  },
+  {
+    "name": "Mesin Cuci Cewe By Fasilitas",
+    "method": "GET",
+    "path": "/api/v1/mesin-cuci-cewe/fasilitas/1",
+    "status_code": 200,
+    "elapsed_ms": 2.85,
+    "message": "Data booking berdasarkan fasilitas berhasil diambil"
+  },
+  {
+    "name": "Mesin Cuci Cewe Facilities",
+    "method": "GET",
+    "path": "/api/v1/mesin-cuci-cewe/facilities",
+    "status_code": 200,
+    "elapsed_ms": 1.74,
+    "message": "Data fasilitas mesin cuci cewe berhasil diambil"
+  },
+  {
+    "name": "Mesin Cuci Cewe By Time Range",
+    "method": "GET",
+    "path": "/api/v1/mesin-cuci-cewe/time-range",
+    "status_code": 500,
+    "elapsed_ms": 1.45,
+    "message": "Internal server error"
+  },
+  {
+    "name": "Mesin Cuci Cewe Time Slots",
+    "method": "GET",
+    "path": "/api/v1/mesin-cuci-cewe/time-slots",
+    "status_code": 200,
+    "elapsed_ms": 3.69,
+    "message": "Saran slot waktu berhasil diambil"
+  },
+  {
+    "name": "Mesin Cuci Cowo List",
+    "method": "GET",
+    "path": "/api/v1/mesin-cuci-cowo",
+    "status_code": 200,
+    "elapsed_ms": 3.16,
+    "message": "Data retrieved successfully"
+  },
+  {
+    "name": "Mesin Cuci Cowo Detail",
+    "method": "GET",
+    "path": "/api/v1/mesin-cuci-cowo/8",
+    "status_code": 200,
+    "elapsed_ms": 2.5,
+    "message": "Success"
+  },
+  {
+    "name": "Mesin Cuci Cowo By Peminjam",
+    "method": "GET",
+    "path": "/api/v1/mesin-cuci-cowo/peminjam/2",
+    "status_code": 200,
+    "elapsed_ms": 2.69,
+    "message": "Data booking berdasarkan peminjam berhasil diambil"
+  },
+  {
+    "name": "Mesin Cuci Cowo By Fasilitas",
+    "method": "GET",
+    "path": "/api/v1/mesin-cuci-cowo/fasilitas/2",
+    "status_code": 200,
+    "elapsed_ms": 2.13,
+    "message": "Data booking berdasarkan fasilitas berhasil diambil"
+  },
+  {
+    "name": "Mesin Cuci Cowo Facilities",
+    "method": "GET",
+    "path": "/api/v1/mesin-cuci-cowo/facilities",
+    "status_code": 200,
+    "elapsed_ms": 1.77,
+    "message": "Data fasilitas mesin cuci cowo berhasil diambil"
+  },
+  {
+    "name": "Mesin Cuci Cowo By Time Range",
+    "method": "GET",
+    "path": "/api/v1/mesin-cuci-cowo/time-range",
+    "status_code": 500,
+    "elapsed_ms": 1.31,
+    "message": "Internal server error"
+  },
+  {
+    "name": "Mesin Cuci Cowo Time Slots",
+    "method": "GET",
+    "path": "/api/v1/mesin-cuci-cowo/time-slots",
+    "status_code": 200,
+    "elapsed_ms": 3.97,
+    "message": "Saran slot waktu berhasil diambil"
+  },
+  {
+    "name": "CWS List",
+    "method": "GET",
+    "path": "/api/v1/cws",
+    "status_code": 200,
+    "elapsed_ms": 3.3,
+    "message": "Data retrieved successfully"
+  },
+  {
+    "name": "CWS Detail",
+    "method": "GET",
+    "path": "/api/v1/cws/1",
+    "status_code": 200,
+    "elapsed_ms": 2.26,
+    "message": "Success"
+  },
+  {
+    "name": "CWS By Penanggung Jawab",
+    "method": "GET",
+    "path": "/api/v1/cws/penanggung-jawab/1",
+    "status_code": 200,
+    "elapsed_ms": 2.32,
+    "message": "Data CWS berhasil diambil"
+  },
+  {
+    "name": "CWS By Date",
+    "method": "GET",
+    "path": "/api/v1/cws/date/2025-09-20",
+    "status_code": 200,
+    "elapsed_ms": 2.09,
+    "message": "Data booking CWS untuk tanggal 2025-09-20 berhasil diambil"
+  },
+  {
+    "name": "CWS Time Slots",
+    "method": "GET",
+    "path": "/api/v1/cws/time-slots",
+    "status_code": 200,
+    "elapsed_ms": 2.83,
+    "message": "Saran slot waktu berhasil diambil"
+  },
+  {
+    "name": "CWS Time Suggestions",
+    "method": "GET",
+    "path": "/api/v1/cws/time-suggestions",
+    "status_code": 200,
+    "elapsed_ms": 1.1,
+    "message": "Saran slot waktu berhasil diambil"
+  },
+  {
+    "name": "Communal Create",
+    "method": "POST",
+    "path": "/api/v1/communal",
+    "status_code": 200,
+    "elapsed_ms": 501.0,
+    "message": "Booking communal berhasil dibuat"
+  },
+  {
+    "name": "Serbaguna Create",
+    "method": "POST",
+    "path": "/api/v1/serbaguna",
+    "status_code": 200,
+    "elapsed_ms": 504.0,
+    "message": "Booking serbaguna berhasil dibuat"
+  },
+  {
+    "name": "Dapur Create",
+    "method": "POST",
+    "path": "/api/v1/dapur",
+    "status_code": 200,
+    "elapsed_ms": 551.0,
+    "message": "Booking dapur berhasil dibuat"
+  },
+  {
+    "name": "Mesin Cuci Cewe Create",
+    "method": "POST",
+    "path": "/api/v1/mesin-cuci-cewe",
+    "status_code": 200,
+    "elapsed_ms": 501.0,
+    "message": "Booking mesin cuci cewe berhasil dibuat"
+  },
+  {
+    "name": "Mesin Cuci Cowo Create",
+    "method": "POST",
+    "path": "/api/v1/mesin-cuci-cowo",
+    "status_code": 200,
+    "elapsed_ms": 504.0,
+    "message": "Booking mesin cuci cowo berhasil dibuat"
+  },
+  {
+    "name": "CWS Create",
+    "method": "POST",
+    "path": "/api/v1/cws",
+    "status_code": 200,
+    "elapsed_ms": 551.0,
+    "message": "Booking CWS berhasil dibuat"
+  },
+  {
+    "name": "CWS Mark Past Done",
+    "method": "POST",
+    "path": "/api/v1/cws/mark-past-done",
+    "status_code": 200,
+    "elapsed_ms": 312.54,
+    "message": "Past bookings berhasil di-mark sebagai done"
+  },
+  {
+    "name": "Theater Create",
+    "method": "POST",
+    "path": "/api/v1/theater",
+    "status_code": 200,
+    "elapsed_ms": 501.0,
+    "message": "Booking theater berhasil dibuat"
+  },
+  {
+    "name": "Users Create (Disabled)",
+    "method": "POST",
+    "path": "/api/v1/users",
+    "status_code": 400,
+    "elapsed_ms": 120.91,
+    "message": "Use /api/v1/auth/register for creating users"
+  },
+  {
+    "name": "Auth Logout",
+    "method": "POST",
+    "path": "/api/v1/auth/logout",
+    "status_code": 200,
+    "elapsed_ms": 58.44,
+    "message": "Logout berhasil"
+  }
+]

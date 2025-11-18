@@ -44,6 +44,36 @@ export class AuthService {
   }
 
   /**
+   * Login user by WhatsApp number only
+   * (used for trusted system integrations like n8n)
+   */
+  async loginByNomorWa(nomorWa: string): Promise<LoginResponse> {
+    // Find user by WhatsApp number
+    const user = await this.prisma.users.findFirst({
+      where: { nomorWa },
+      include: {
+        angkatan: true,
+      },
+    });
+
+    if (!user) {
+      throw new Error("Nomor WhatsApp tidak ditemukan");
+    }
+
+    // Generate secure JWT token with only user ID
+    const token = AuthMiddleware.generateToken(user.id.toString());
+
+    // Remove password from user object
+    const { password: _, ...userWithoutPassword } = user;
+
+    return {
+      user: userWithoutPassword,
+      token,
+      expiresIn: "1h",
+    };
+  }
+
+  /**
    * Login user
    */
   async login(loginData: LoginDTO): Promise<LoginResponse> {

@@ -46,6 +46,51 @@ export class AuthController {
   };
 
   /**
+   * Special login endpoint for n8n integration
+   * Uses shared secret from N8N_PASS env variable instead of user password
+   */
+  n8nLogin = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      const { nomorWa, n8nPass } = req.body as {
+        nomorWa?: string;
+        n8nPass?: string;
+      };
+
+      // Basic validation
+      if (!nomorWa || !n8nPass) {
+        ResponseUtil.badRequest(res, "Nomor WhatsApp dan n8nPass harus diisi");
+        return;
+      }
+
+      const expectedPass = process.env.N8N_PASS;
+
+      // If env not set or secret mismatch, reject
+      if (!expectedPass || n8nPass !== expectedPass) {
+        ResponseUtil.unauthorized(res, "N8N credential tidak valid");
+        return;
+      }
+
+      const result = await this.authService.loginByNomorWa(nomorWa);
+      ResponseUtil.success(res, result, "Login n8n berhasil");
+    } catch (error) {
+      if (error instanceof Error) {
+        if (
+          error.message.includes("tidak valid") ||
+          error.message.includes("tidak ditemukan")
+        ) {
+          ResponseUtil.unauthorized(res, error.message);
+          return;
+        }
+      }
+      next(error);
+    }
+  };
+
+  /**
    * Register endpoint
    */
   register = async (
