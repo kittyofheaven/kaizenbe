@@ -2,8 +2,10 @@ import { Users, Prisma } from "@prisma/client";
 import { BaseService } from "./base.service";
 import { UsersRepository } from "../repositories/users.repository";
 
-// Type for User without password
-export type UserWithoutPassword = Omit<Users, "password">;
+// Type for User without password, with gender string
+export type UserWithoutPassword = Omit<Users, "password" | "isMale"> & {
+  gender: "Male" | "Female";
+};
 
 // DTOs
 export interface CreateUserDTO {
@@ -31,8 +33,11 @@ export class UsersService {
    * Remove password from user object
    */
   private removePassword(user: Users): UserWithoutPassword {
-    const { password, ...userWithoutPassword } = user;
-    return userWithoutPassword;
+    const { password, isMale, ...rest } = user;
+    return {
+      ...rest,
+      gender: isMale ? "Male" : "Female",
+    };
   }
 
   /**

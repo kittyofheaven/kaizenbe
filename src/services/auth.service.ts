@@ -17,13 +17,28 @@ export interface RegisterDTO {
 }
 
 export interface LoginResponse {
-  user: Omit<Users, "password">;
+  user: PublicUser;
   token: string;
   expiresIn: string;
 }
 
+export type PublicUser = Omit<Users, "password" | "isMale"> & {
+  gender: "Male" | "Female";
+};
+
 export class AuthService {
   private prisma = DatabaseConnection.getInstance();
+
+  /**
+   * Map internal Users model to public user shape (adds gender string, hides password/isMale)
+   */
+  private mapToPublicUser(user: Users): PublicUser {
+    const { password: _, isMale, ...rest } = user;
+    return {
+      ...rest,
+      gender: isMale ? "Male" : "Female",
+    };
+  }
 
   /**
    * Hash password
@@ -63,11 +78,8 @@ export class AuthService {
     // Generate secure JWT token with only user ID
     const token = AuthMiddleware.generateToken(user.id.toString());
 
-    // Remove password from user object
-    const { password: _, ...userWithoutPassword } = user;
-
     return {
-      user: userWithoutPassword,
+      user: this.mapToPublicUser(user),
       token,
       expiresIn: "1h",
     };
@@ -100,11 +112,8 @@ export class AuthService {
     // Generate secure JWT token with only user ID
     const token = AuthMiddleware.generateToken(user.id.toString());
 
-    // Remove password from user object
-    const { password: _, ...userWithoutPassword } = user;
-
     return {
-      user: userWithoutPassword,
+      user: this.mapToPublicUser(user),
       token,
       expiresIn: "1h",
     };
@@ -157,11 +166,8 @@ export class AuthService {
     // Generate secure JWT token with only user ID
     const token = AuthMiddleware.generateToken(user.id.toString());
 
-    // Remove password from user object
-    const { password: _, ...userWithoutPassword } = user;
-
     return {
-      user: userWithoutPassword,
+      user: this.mapToPublicUser(user),
       token,
       expiresIn: "1h",
     };
@@ -170,7 +176,7 @@ export class AuthService {
   /**
    * Get user profile by ID
    */
-  async getProfile(userId: string): Promise<Omit<Users, "password"> | null> {
+  async getProfile(userId: string): Promise<PublicUser | null> {
     const user = await this.prisma.users.findUnique({
       where: { id: BigInt(userId) },
       include: {
@@ -182,9 +188,7 @@ export class AuthService {
       return null;
     }
 
-    // Remove password from user object
-    const { password: _, ...userWithoutPassword } = user;
-    return userWithoutPassword;
+    return this.mapToPublicUser(user);
   }
 
   /**

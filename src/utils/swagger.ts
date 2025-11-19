@@ -56,6 +56,12 @@ const options = {
               description: "Nickname",
               example: "John",
             },
+            gender: {
+              type: "string",
+              description: "Gender of the user",
+              enum: ["Male", "Female"],
+              example: "Male",
+            },
             nomorWa: {
               type: "string",
               nullable: true,

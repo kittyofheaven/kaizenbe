@@ -186,6 +186,7 @@ model Users {
   namaPanggilan String
   nomorWa       String?
   password      String
+  isMale        Boolean  @default(true)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 

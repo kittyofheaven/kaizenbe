@@ -35,6 +35,8 @@ CREATE TABLE IF NOT EXISTS `Users` (
   `namaLengkap` VARCHAR(191) NOT NULL,
   `namaPanggilan` VARCHAR(191) NOT NULL,
   `nomorWa` VARCHAR(191) NULL,
+  `password` VARCHAR(191) NOT NULL,
+  `isMale` BOOLEAN NOT NULL DEFAULT true,
   `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `updatedAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`),
@@ -241,11 +243,11 @@ INSERT IGNORE INTO `Angkatan` (`id`, `namaAngkatan`) VALUES
 (4, '2024');
 
 -- Insert sample Users data
-INSERT IGNORE INTO `Users` (`id`, `idAngkatan`, `namaLengkap`, `namaPanggilan`, `nomorWa`) VALUES 
-(1, 1, 'John Doe', 'John', '081234567890'),
-(2, 1, 'Jane Smith', 'Jane', '081234567891'),
-(3, 2, 'Bob Wilson', 'Bob', '081234567892'),
-(4, 2, 'Alice Johnson', 'Alice', '081234567893');
+INSERT IGNORE INTO `Users` (`id`, `idAngkatan`, `namaLengkap`, `namaPanggilan`, `nomorWa`, `password`, `isMale`) VALUES 
+(1, 1, 'John Doe', 'John', '081234567890', 'changeme', true),
+(2, 1, 'Jane Smith', 'Jane', '081234567891', 'changeme', false),
+(3, 2, 'Bob Wilson', 'Bob', '081234567892', 'changeme', true),
+(4, 2, 'Alice Johnson', 'Alice', '081234567893', 'changeme', false);
 
 -- Insert sample AreaSerbaguna data
 INSERT IGNORE INTO `AreaSerbaguna` (`id`, `namaArea`) VALUES 
@@ -319,5 +321,4 @@ API ENDPOINTS AVAILABLE:
 For more information, see the API documentation at:
 http://localhost:3000/api/docs
 */
-
 
