@@ -7,6 +7,11 @@ generator client {
   provider = "prisma-client-js"
 }
 
+enum AccessLevel {
+  REGULAR
+  ADMIN
+}
+
 model AreaSerbaguna {
   id        BigInt   @id @default(autoincrement())
   namaArea  String   @db.VarChar(255)
@@ -187,6 +192,7 @@ model Users {
   nomorWa       String?
   password      String
   isMale        Boolean  @default(true)
+  accessLevel   AccessLevel @default(REGULAR)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 

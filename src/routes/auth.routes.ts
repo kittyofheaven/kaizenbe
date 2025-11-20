@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { AuthController } from "../controllers/auth.controller";
 import { AuthMiddleware } from "../middleware/auth.middleware";
+import { AdminMiddleware } from "../middleware/admin.middleware";
 
 const router = Router();
 const authController = new AuthController();
@@ -151,11 +152,13 @@ router.post("/login", authController.login);
 
 router.post("/n8n-login", authController.n8nLogin);
 
-// TEMPORARILY DISABLED - Registration endpoint
-// Uncomment the lines below to enable registration
-/*
-router.post("/register", authController.register);
-*/
+// Registration endpoint - restricted to admin users only
+router.post(
+  "/register",
+  AuthMiddleware.authenticate,
+  AdminMiddleware.requireAdmin,
+  authController.register
+);
 
 /**
  * @swagger

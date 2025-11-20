@@ -22,7 +22,7 @@ export interface LoginResponse {
   expiresIn: string;
 }
 
-export type PublicUser = Omit<Users, "password" | "isMale"> & {
+export type PublicUser = Omit<Users, "password" | "isMale" | "accessLevel"> & {
   gender: "Male" | "Female";
 };
 
@@ -33,7 +33,7 @@ export class AuthService {
    * Map internal Users model to public user shape (adds gender string, hides password/isMale)
    */
   private mapToPublicUser(user: Users): PublicUser {
-    const { password: _, isMale, ...rest } = user;
+    const { password: _, isMale, accessLevel, ...rest } = user;
     return {
       ...rest,
       gender: isMale ? "Male" : "Female",

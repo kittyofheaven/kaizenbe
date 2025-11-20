@@ -8,6 +8,7 @@ import {
 } from "../services/mesin-cuci-cewe.service";
 import { ResponseUtil } from "../utils/response";
 import { TimeValidationUtil } from "../utils/time-validation";
+import { AccessControlUtil } from "../utils/access-control";
 
 export class MesinCuciCeweController extends BaseController<
   MesinCuciCewe,
@@ -228,6 +229,39 @@ export class MesinCuciCeweController extends BaseController<
       next(error);
     }
   };
-}
 
+  // Override delete to enforce ownership/admin rules
+  delete = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      if (!req.user) {
+        ResponseUtil.unauthorized(res, "Access token is required");
+        return;
+      }
+
+      const bookingId = BigInt(req.params.id!);
+      const currentUserId = BigInt(req.user.id);
+
+      const booking = await this.mesinCuciCeweService.getById(bookingId);
+
+      const isAdmin = await AccessControlUtil.isAdmin(currentUserId);
+      if (!isAdmin && booking.idPeminjam !== currentUserId) {
+        ResponseUtil.forbidden(res, "Access denied");
+        return;
+      }
+
+      await this.mesinCuciCeweService.delete(bookingId);
+      ResponseUtil.success(res, null, "Resource deleted successfully");
+    } catch (error) {
+      if (error instanceof Error && error.message.includes("Resource not found")) {
+        ResponseUtil.notFound(res, "Resource not found");
+        return;
+      }
+      next(error);
+    }
+  };
+}
 

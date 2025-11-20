@@ -9,6 +9,7 @@ import dapurRoutes from "./dapur.routes";
 import cwsRoutes from "./cws.routes";
 import theaterRoutes from "./theater.routes";
 import { AuthMiddleware } from "../middleware/auth.middleware";
+import { AdminMiddleware } from "../middleware/admin.middleware";
 
 const router = Router();
 
@@ -19,7 +20,12 @@ const API_VERSION = "/api/v1";
 router.use(`${API_VERSION}/auth`, authRoutes);
 
 // Protected routes (authentication required)
-router.use(`${API_VERSION}/users`, AuthMiddleware.authenticate, usersRoutes);
+router.use(
+  `${API_VERSION}/users`,
+  AuthMiddleware.authenticate,
+  AdminMiddleware.requireAdmin,
+  usersRoutes
+);
 router.use(
   `${API_VERSION}/communal`,
   AuthMiddleware.authenticate,

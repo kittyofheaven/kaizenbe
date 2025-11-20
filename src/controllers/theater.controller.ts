@@ -8,6 +8,7 @@ import {
 } from "../services/theater.service";
 import { ResponseUtil } from "../utils/response";
 import { TimeValidationUtil } from "../utils/time-validation";
+import { AccessControlUtil } from "../utils/access-control";
 
 export class TheaterController extends BaseController<
   Theater,
@@ -186,6 +187,40 @@ export class TheaterController extends BaseController<
         "Saran slot waktu berhasil diambil"
       );
     } catch (error) {
+      next(error);
+    }
+  };
+
+  // Override delete to enforce ownership/admin rules
+  delete = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      if (!req.user) {
+        ResponseUtil.unauthorized(res, "Access token is required");
+        return;
+      }
+
+      const bookingId = BigInt(req.params.id!);
+      const currentUserId = BigInt(req.user.id);
+
+      const booking = await this.theaterService.getById(bookingId);
+
+      const isAdmin = await AccessControlUtil.isAdmin(currentUserId);
+      if (!isAdmin && booking.idPenanggungJawab !== currentUserId) {
+        ResponseUtil.forbidden(res, "Access denied");
+        return;
+      }
+
+      await this.theaterService.delete(bookingId);
+      ResponseUtil.success(res, null, "Resource deleted successfully");
+    } catch (error) {
+      if (error instanceof Error && error.message.includes("Resource not found")) {
+        ResponseUtil.notFound(res, "Resource not found");
+        return;
+      }
       next(error);
     }
   };
