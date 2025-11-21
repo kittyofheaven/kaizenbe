@@ -1,6 +1,7 @@
 import express from "express";
 import type { Request, Response, NextFunction } from "express";
 import dotenv from "dotenv";
+import cors, { type CorsOptions } from "cors";
 
 // Import routes and middleware
 import routes from "./routes";
@@ -17,6 +18,30 @@ BigIntSerializer.configureGlobalSerialization();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// CORS setup (hard-coded allowed origins)
+const allowedOrigins = [
+  "https://admin.rtbconnect.space",
+  "https://n8n.rtbconnect.space",
+  "https://rtbconnect.space",
+  "http://localhost:3000",
+  "http://localhost:3001",
+  "http://localhost:3002",
+];
+
+const corsOptions: CorsOptions = {
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions));
 
 // Middleware
 app.use(express.json());
